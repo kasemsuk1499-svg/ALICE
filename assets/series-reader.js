@@ -40,6 +40,12 @@
     return response.ok ? response.text() : "";
   }
 
+  function addEmbeddedStyles(doc) {
+    const style = doc.createElement("style");
+    style.textContent = ".hidden-seed{margin:22px 0;color:inherit}.hidden-seed p{margin:14px 0}.hidden-seed .whisper{padding-left:16px;border-left:3px solid rgba(247,215,116,.5);font-style:italic}";
+    doc.head.appendChild(style);
+  }
+
   async function loadEmbeddedChapter() {
     const frame = document.createElement("iframe");
     frame.className = "embedded-chapter";
@@ -56,6 +62,7 @@
         doc.querySelectorAll(".byline").forEach(el => {
           el.textContent = el.textContent.replace("ฉบับรอตรวจ", "เผยแพร่");
         });
+        addEmbeddedStyles(doc);
         const extra = await getInterlude();
         if (extra) {
           const ending = doc.querySelector(".end");
