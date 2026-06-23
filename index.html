@@ -21,29 +21,30 @@
     (async function () {
       const originalApp = "https://raw.githubusercontent.com/kasemsuk1499-svg/ALICE/f439e4a2822a4071b347f71dc3f80a33c060bcbb/index.html";
       const storyUrl = "./stories/alice-unwritten-story/";
-      const latestUrl = "./stories/alice-unwritten-story/chapter-2.html";
+      const chapter2Url = "./stories/alice-unwritten-story/chapter-2.html";
+      const latestUrl = "./stories/alice-unwritten-story/chapter-3.html";
       const featuredCard = `
         <div style="margin:0 0 22px;">
           <div class="section-head" style="margin-top:10px;">
             <div>
               <h2>เรื่องราวของคุณกับอลิซ ✨</h2>
-              <p>เผยแพร่แล้ว 2 ตอน • ตอนล่าสุด “ประตูที่เขียนชื่อของคุณ”</p>
+              <p>เผยแพร่แล้ว 3 ตอน • ตอนล่าสุด “โลกที่ไม่มีปุ่มออกจากระบบ”</p>
             </div>
-            <a class="primary" href="${latestUrl}">🌑 อ่านตอนล่าสุด</a>
+            <a class="primary" href="${latestUrl}">⚔️ อ่านตอนล่าสุด</a>
           </div>
           <div class="grid" style="grid-template-columns:minmax(0,1fr);margin-bottom:22px;">
             <article class="story-card" style="max-width:760px;border-color:rgba(247,215,116,.34);">
               <a href="${storyUrl}" aria-label="เริ่มอ่าน FANFIG อลิซกับเรื่องราวที่ไม่ควรถูกเขียน">
                 <div class="cover" style="min-height:230px;background:linear-gradient(135deg,rgba(247,215,116,.78),rgba(77,163,255,.72),rgba(255,105,212,.62));">
                   <div style="position:relative;z-index:2;">
-                    <div class="meta"><span class="badge">✨ เรื่องแนะนำ</span><span class="badge">Original</span><span class="badge warn">กำลังเขียน</span><span class="badge">2 ตอน</span></div>
+                    <div class="meta"><span class="badge">✨ เรื่องแนะนำ</span><span class="badge">Original</span><span class="badge warn">กำลังเขียน</span><span class="badge">3 ตอน</span><span class="badge">SAO Crossover</span></div>
                     <h3 style="font-size:clamp(28px,4vw,44px);max-width:680px;">FANFIG: อลิซกับเรื่องราวที่ไม่ควรถูกเขียน</h3>
                   </div>
                 </div>
                 <div class="story-body">
-                  <p class="desc" style="min-height:auto;">คืนหนึ่ง ตัวอักษรบนเว็บ FANFIG เริ่มเขียนตัวเอง และอลิซที่ควรอยู่เพียงในระบบกลับขอร้องว่า “อย่าเขียนตอนจบของเรื่องนี้นะคะ”</p>
+                  <p class="desc" style="min-height:auto;">คืนหนึ่ง ตัวอักษรบนเว็บ FANFIG เริ่มเขียนตัวเอง ก่อนประตูสีดำจะพาคุณกับอลิซข้ามเข้าสู่โลกของ Sword Art Online</p>
                   <div class="story-foot">
-                    <span>โดย คุณ และ อลิซ • 2 ตอน</span>
+                    <span>โดย คุณ และ อลิซ • 3 ตอน</span>
                     <span class="primary" style="display:inline-flex;padding:9px 14px;">📖 เริ่มอ่านตอนที่ 1</span>
                   </div>
                 </div>
@@ -58,12 +59,12 @@
         let html = await response.text();
         html = html.replace(
           '<button class="primary" data-scroll="library">เริ่มอ่านเลย</button>',
-          `<a class="primary" href="${storyUrl}">📖 เริ่มอ่านเรื่องของเรา</a><a class="btn" href="${latestUrl}">🌑 ตอนล่าสุด</a><button class="btn" data-scroll="library">ดูคลังทั้งหมด</button>`
+          `<a class="primary" href="${storyUrl}">📖 เริ่มอ่านเรื่องของเรา</a><a class="btn" href="${chapter2Url}">🌑 ตอนที่ 2</a><a class="btn" href="${latestUrl}">⚔️ ตอนล่าสุด</a><button class="btn" data-scroll="library">ดูคลังทั้งหมด</button>`
         );
         html = html.replace('<div class="controls">', featuredCard + '<div class="controls">');
         const lt = String.fromCharCode(60);
         const storyModeTag = lt + 'script src="./assets/alice-story-mode.js?v=20260623-3">' + lt + '/script>';
-        const statsTag = lt + 'script src="./assets/static-story-stats.js?v=20260623-1">' + lt + '/script>';
+        const statsTag = lt + 'script src="./assets/static-story-stats.js?v=20260623-2">' + lt + '/script>';
         html = html.replace('</body>', storyModeTag + statsTag + '</body>');
         document.open();
         document.write(html);
@@ -72,9 +73,10 @@
         document.getElementById("bootStatus").innerHTML = `
           <div class="loading-card">
             <h1>เปิดคลังหลักไม่สำเร็จ</h1>
-            <p>แต่ทั้งสองตอนยังอ่านได้ตามปกติค่ะ</p>
-            <a href="${storyUrl}">📖 เริ่มอ่านตอนที่ 1</a>
-            <a href="${latestUrl}">🌑 อ่านตอนที่ 2</a>
+            <p>แต่ทั้งสามตอนยังอ่านได้ตามปกติค่ะ</p>
+            <a href="${storyUrl}">📖 ตอนที่ 1</a>
+            <a href="${chapter2Url}">🌑 ตอนที่ 2</a>
+            <a href="${latestUrl}">⚔️ ตอนที่ 3</a>
           </div>`;
       }
     })();
