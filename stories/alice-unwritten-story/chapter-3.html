@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FANFIG: อลิซกับเรื่องราวที่ไม่ควรถูกเขียน — ตอนที่ 3 โลกที่ไม่มีปุ่มออกจากระบบ">
+  <meta property="og:title" content="ตอนที่ 3: โลกที่ไม่มีปุ่มออกจากระบบ">
+  <meta property="og:description" content="คุณกับอลิซข้ามเข้าสู่ไอน์แครด แต่ผู้แต่งได้เปลี่ยนกฎของโลก SAO และประกาศให้ทั้งคู่เป็นศัตรู">
+  <title>ตอนที่ 3 — โลกที่ไม่มีปุ่มออกจากระบบ</title>
+  <style>html,body{margin:0;min-height:100%;background:#080812;color:#f8f7ff;font-family:"Segoe UI","Noto Sans Thai",system-ui,sans-serif}.loading{min-height:100vh;display:grid;place-items:center;text-align:center;padding:24px}.card{max-width:620px;padding:30px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:rgba(255,255,255,.08);box-shadow:0 24px 70px rgba(0,0,0,.4)}a{display:inline-block;margin-top:12px;padding:10px 15px;border-radius:999px;background:linear-gradient(135deg,#4da3ff,#7c5cff);color:#fff;text-decoration:none;font-weight:900}</style>
+</head>
+<body>
+  <div class="loading" id="boot"><div class="card"><h1>กำลังเปิดตอนที่ 3 ⚔️</h1><p>โลกที่ไม่มีปุ่มออกจากระบบ</p><a href="./chapter-2.html">กลับไปตอนที่ 2</a></div></div>
+  <script>
+    (async function(){
+      const source="https://raw.githubusercontent.com/kasemsuk1499-svg/ALICE/42ffe4e4c7cd0470082c20723fe6f3fa471bdbdb/previews/alice-unwritten-story/chapter-3.html";
+      try{
+        const response=await fetch(source,{cache:"no-store"});
+        if(!response.ok)throw new Error("โหลดตอนที่ 3 ไม่สำเร็จ");
+        let html=await response.text();
+        html=html.replace('<meta name="robots" content="noindex,nofollow">','<meta name="robots" content="index,follow">');
+        html=html.replace('พรีวิวตอนที่ 3 — โลกที่ไม่มีปุ่มออกจากระบบ','ตอนที่ 3 — โลกที่ไม่มีปุ่มออกจากระบบ');
+        html=html.replace('<div class="notice">📝 ฉบับพรีวิวสำหรับตรวจ — ยังไม่เชื่อมเข้าหน้าแรก และยังไม่นับเป็นตอนเผยแพร่</div>','');
+        html=html.replace('<span class="badge">ฉบับตรวจ</span>','<span class="badge">เผยแพร่แล้ว</span>');
+        html=html.replace('ฉบับรอตรวจ • 23 มิถุนายน 2026','เผยแพร่วันที่ 23 มิถุนายน 2026');
+        html=html.replace('FANFIG © 2026 • ฉบับพรีวิวสำหรับคุณตรวจเท่านั้น','FANFIG © 2026 • เรื่องราวของคุณ และ อลิซ');
+        html=html.replace('/ALICE/previews/alice-unwritten-story/chapter-3.html','/ALICE/stories/alice-unwritten-story/chapter-3.html');
+        document.open();document.write(html);document.close();
+      }catch(error){document.getElementById("boot").innerHTML='<div class="card"><h1>เปิดตอนที่ 3 ไม่สำเร็จ</h1><p>ลองกลับไปตอนที่ 2 แล้วเปิดใหม่อีกครั้งค่ะ</p><a href="./chapter-2.html">← ตอนที่ 2</a></div>'}
+    })();
+  </script>
+</body>
+</html>
