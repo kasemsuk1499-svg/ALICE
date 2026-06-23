@@ -61,9 +61,10 @@
           `<a class="primary" href="${storyUrl}">📖 เริ่มอ่านเรื่องของเรา</a><a class="btn" href="${latestUrl}">🌑 ตอนล่าสุด</a><button class="btn" data-scroll="library">ดูคลังทั้งหมด</button>`
         );
         html = html.replace('<div class="controls">', featuredCard + '<div class="controls">');
-        const openTag = String.fromCharCode(60) + 'script src="./assets/alice-story-mode.js?v=20260623-3">';
-        const closeTag = String.fromCharCode(60) + '/script>';
-        html = html.replace('</body>', openTag + closeTag + '</body>');
+        const lt = String.fromCharCode(60);
+        const storyModeTag = lt + 'script src="./assets/alice-story-mode.js?v=20260623-3">' + lt + '/script>';
+        const statsTag = lt + 'script src="./assets/static-story-stats.js?v=20260623-1">' + lt + '/script>';
+        html = html.replace('</body>', storyModeTag + statsTag + '</body>');
         document.open();
         document.write(html);
         document.close();
