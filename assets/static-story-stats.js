@@ -4,7 +4,7 @@
   const STATIC_STORY = {
     id: "alice-unwritten-story",
     title: "FANFIG: อลิซกับเรื่องราวที่ไม่ควรถูกเขียน",
-    chapters: 2
+    chapters: 3
   };
 
   function getDynamicStories() {
