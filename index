@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FANFIG — Complete Community System</title>
+  <meta name="description" content="FANFIG เว็บอ่านและเขียนแฟนฟิค / นิยาย พร้อมระบบสมาชิก คลังสาธารณะ คอมเมนต์ ไลก์ บุ๊กมาร์ก และ Firebase" />
+  <style>
+    :root {
+      --bg: #090914;
+      --bg2: #111124;
+      --card: rgba(255,255,255,.08);
+      --card2: rgba(255,255,255,.13);
+      --text: #f8f7ff;
+      --muted: #b9b7d8;
+      --line: rgba(255,255,255,.14);
+      --brand: #ff4fd8;
+      --brand2: #7c5cff;
+      --brand3: #00e0ff;
+      --ok: #4dffb5;
+      --warn: #ffd166;
+      --danger: #ff5c7a;
+      --shadow: 0 24px 70px rgba(0,0,0,.38);
+      --radius: 22px;
+      --max: 1200px;
+      --font: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans Thai", sans-serif;
+    }
+    [data-theme="light"] {
+      --bg: #f6f3ff;
+      --bg2: #ffffff;
+      --card: rgba(255,255,255,.78);
+      --card2: rgba(255,255,255,.96);
+      --text: #17172b;
+      --muted: #5c5d7d;
+      --line: rgba(31,30,70,.13);
+      --shadow: 0 20px 55px rgba(61,45,122,.14);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--text);
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 10% 8%, rgba(255,79,216,.28), transparent 25%),
+        radial-gradient(circle at 84% 10%, rgba(0,224,255,.16), transparent 30%),
+        radial-gradient(circle at 48% 86%, rgba(124,92,255,.23), transparent 34%),
+        var(--bg);
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, black, transparent 82%);
+      z-index: 0;
+    }
+    button, input, textarea, select { font: inherit; }
+    button { border: 0; cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    .app { position: relative; z-index: 1; min-height: 100vh; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(9,9,20,.74);
+      border-bottom: 1px solid var(--line);
+    }
+    [data-theme="light"] .topbar { background: rgba(246,243,255,.78); }
+    .nav {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 13px 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 950; letter-spacing: .6px; }
+    .logo {
+      width: 44px; height: 44px; border-radius: 16px;
+      display: grid; place-items: center; color: #fff;
+      background: linear-gradient(135deg, var(--brand), var(--brand2), var(--brand3));
+      box-shadow: 0 12px 30px rgba(124,92,255,.28);
+      transform: rotate(-3deg);
+    }
+    .brand small { display:block; color: var(--muted); font-size: 12px; letter-spacing:0; font-weight:800; margin-top:-2px; }
+    .nav-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+    .btn, .nav-btn, .primary, .danger, .soft {
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: var(--text);
+      background: var(--card);
+      border: 1px solid var(--line);
+      transition: .2s ease;
+      white-space: nowrap;
+      font-weight: 800;
+    }
+    .btn:hover, .nav-btn:hover, .soft:hover { transform: translateY(-1px); background: var(--card2); }
+    .nav-btn.active { background: linear-gradient(135deg, rgba(255,79,216,.24), rgba(124,92,255,.24)); border-color: rgba(255,255,255,.26); }
+    .primary { background: linear-gradient(135deg, var(--brand), var(--brand2)); color: #fff; border-color: transparent; box-shadow: 0 16px 35px rgba(124,92,255,.26); }
+    .primary:hover { transform: translateY(-1px) scale(1.01); filter: brightness(1.05); }
+    .danger { background: rgba(255,92,122,.16); border-color: rgba(255,92,122,.38); color: #ffd7df; }
+    .danger:hover { background: rgba(255,92,122,.24); transform: translateY(-1px); }
+    .container { max-width: var(--max); margin: 0 auto; padding: 24px 18px 72px; }
+    .hero { display:grid; grid-template-columns: 1.05fr .95fr; gap: 22px; align-items: stretch; padding: 34px 0 16px; }
+    .panel, .hero-card, .story-card, .reader, .modal-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .hero-card { padding: 34px; position: relative; overflow: hidden; }
+    .hero-card::after { content:""; position:absolute; right:-70px; top:-70px; width:240px; height:240px; border-radius:50%; background: radial-gradient(circle, rgba(255,79,216,.34), transparent 68%); }
+    .eyebrow { display:inline-flex; gap:8px; align-items:center; border:1px solid var(--line); background:rgba(255,255,255,.08); color:var(--muted); padding:8px 12px; border-radius:999px; font-weight:850; font-size:13px; }
+    h1 { margin: 18px 0 12px; font-size: clamp(36px, 6vw, 68px); line-height:.96; letter-spacing:-2px; }
+    .gradient-text { background: linear-gradient(90deg, var(--brand), #ffd6f6, var(--brand3)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .lead { color:var(--muted); line-height:1.82; font-size:17px; max-width:780px; }
+    .hero-actions, .row { display:flex; flex-wrap:wrap; gap:9px; align-items:center; }
+    .hero-actions { margin-top: 22px; }
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:26px; }
+    .stat { padding:16px; border-radius:18px; background:rgba(255,255,255,.07); border:1px solid var(--line); }
+    .stat b { display:block; font-size:28px; margin-bottom:2px; }
+    .stat span { color:var(--muted); font-size:13px; font-weight:800; }
+    .feature-panel { padding:22px; display:grid; gap:14px; }
+    .feature { padding:18px; border-radius:18px; background:rgba(255,255,255,.07); border:1px solid var(--line); }
+    .feature h3 { margin:0 0 6px; font-size:17px; }
+    .feature p { margin:0; color:var(--muted); line-height:1.68; font-size:14px; }
+    .section-head { display:flex; justify-content:space-between; align-items:flex-end; gap:18px; margin:34px 0 16px; }
+    .section-head h2 { margin:0; font-size: clamp(25px, 3vw, 36px); letter-spacing:-.6px; }
+    .section-head p { margin:6px 0 0; color:var(--muted); line-height:1.65; }
+    .controls { display:grid; grid-template-columns: 1fr 180px 160px 160px; gap:10px; margin:14px 0 18px; }
+    .field { width:100%; border-radius:16px; border:1px solid var(--line); color:var(--text); background:rgba(255,255,255,.08); outline:none; padding:13px 14px; transition:.2s ease; }
+    .field:focus { border-color:rgba(255,79,216,.56); box-shadow:0 0 0 4px rgba(255,79,216,.11); }
+    textarea.field { min-height:160px; resize:vertical; line-height:1.75; }
+    option { color:#111; background:#fff; }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; margin: 0 0 18px; }
+    .chip { padding:9px 12px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.07); color:var(--muted); transition:.2s ease; font-weight:850; }
+    .chip:hover, .chip.active { color:var(--text); background:linear-gradient(135deg, rgba(255,79,216,.22), rgba(0,224,255,.16)); transform:translateY(-1px); }
+    .grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px; }
+    .story-card { overflow:hidden; transition:.24s ease; position:relative; }
+    .story-card:hover { transform:translateY(-4px); border-color:rgba(255,255,255,.28); }
+    .cover { min-height:174px; padding:20px; display:flex; align-items:flex-end; position:relative; overflow:hidden; background:linear-gradient(135deg, rgba(255,79,216,.72), rgba(124,92,255,.72)); }
+    .cover::before { content:""; position:absolute; inset:-1px; background:radial-gradient(circle at 80% 10%, rgba(255,255,255,.35), transparent 18%), linear-gradient(130deg, transparent 0 44%, rgba(255,255,255,.16) 45% 47%, transparent 48%); }
+    .cover h3 { position:relative; z-index:1; margin:0; font-size:24px; line-height:1.12; color:#fff; text-shadow:0 8px 20px rgba(0,0,0,.28); }
+    .story-body { padding:18px; }
+    .meta { display:flex; flex-wrap:wrap; gap:7px; margin:0 0 11px; }
+    .badge { font-size:12px; color:var(--text); background:rgba(255,255,255,.10); border:1px solid var(--line); border-radius:999px; padding:5px 8px; font-weight:850; }
+    .badge.ok { color:#caffea; background:rgba(77,255,181,.13); border-color:rgba(77,255,181,.28); }
+    .badge.warn { color:#fff0c4; background:rgba(255,209,102,.12); border-color:rgba(255,209,102,.28); }
+    .desc { margin:0 0 14px; color:var(--muted); line-height:1.62; font-size:14px; min-height:68px; }
+    .story-foot { display:flex; justify-content:space-between; align-items:center; gap:8px; border-top:1px solid var(--line); padding-top:13px; color:var(--muted); font-size:13px; font-weight:800; }
+    .icon-btn { min-width:38px; height:38px; border-radius:14px; display:grid; place-items:center; color:var(--text); background:rgba(255,255,255,.08); border:1px solid var(--line); transition:.2s ease; padding:0 10px; font-weight:900; }
+    .icon-btn:hover { transform:translateY(-1px); background:rgba(255,255,255,.15); }
+    .icon-btn.active { background:rgba(255,209,102,.18); border-color:rgba(255,209,102,.45); }
+    .write-layout { display:grid; grid-template-columns:.92fr 1.08fr; gap:16px; align-items:start; }
+    .panel { padding:20px; }
+    .panel h3 { margin:0 0 12px; font-size:21px; }
+    .form-grid { display:grid; gap:10px; }
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .hint { color:var(--muted); line-height:1.75; font-size:14px; }
+    .empty { padding:34px; text-align:center; color:var(--muted); border:1px dashed var(--line); border-radius:var(--radius); background:rgba(255,255,255,.045); }
+    .reader { padding:0; overflow:hidden; display:none; margin-top:24px; }
+    .reader.active { display:block; }
+    .reader-cover { padding:34px; background:linear-gradient(135deg, rgba(255,79,216,.6), rgba(124,92,255,.55), rgba(0,224,255,.28)); }
+    .reader-cover h2 { font-size:clamp(30px,5vw,54px); margin:8px 0 10px; line-height:1; color:#fff; }
+    .reader-cover p { margin:0; max-width:780px; color:rgba(255,255,255,.86); line-height:1.75; }
+    .reader-content { padding:26px 34px 34px; }
+    .chapter-tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+    .chapter-tab { padding:10px 13px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:rgba(255,255,255,.07); font-weight:900; }
+    .chapter-tab.active { color:var(--text); background:linear-gradient(135deg, rgba(255,79,216,.24), rgba(124,92,255,.24)); }
+    .chapter-text { font-size:17px; color:var(--text); line-height:2; white-space:pre-line; padding:22px; border-radius:18px; background:rgba(255,255,255,.055); border:1px solid var(--line); }
+    .comment-area, .owner-tools, .profile-grid { margin-top:20px; }
+    .comments { display:grid; gap:10px; margin-top:12px; }
+    .comment { padding:13px 14px; border-radius:16px; background:rgba(255,255,255,.07); border:1px solid var(--line); color:var(--muted); line-height:1.65; }
+    .comment b { color:var(--text); }
+    .modal { position:fixed; inset:0; display:none; place-items:center; z-index:90; padding:18px; background:rgba(0,0,0,.58); backdrop-filter:blur(8px); }
+    .modal.active { display:grid; }
+    .modal-card { width:min(660px,100%); padding:22px; max-height:92vh; overflow:auto; }
+    .modal-head { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:12px; }
+    .modal-head h3 { margin:0; font-size:25px; }
+    .auth-user { display:none; align-items:center; gap:8px; max-width:250px; }
+    .auth-user.active { display:flex; }
+    .avatar { width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,.28); background:linear-gradient(135deg,var(--brand),var(--brand2)); }
+    .name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13px; font-weight:900; }
+    .auth-divider { display:flex; align-items:center; gap:12px; color:var(--muted); margin:16px 0; font-size:13px; }
+    .auth-divider::before, .auth-divider::after { content:""; height:1px; flex:1; background:var(--line); }
+    .message { min-height:22px; margin:10px 0 0; color:var(--danger); font-size:13px; font-weight:800; }
+    .sync { font-size:12px; color:var(--muted); text-align:center; margin-top:12px; }
+    .toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(30px); background:rgba(10,10,24,.88); color:#fff; border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:12px 18px; box-shadow:var(--shadow); z-index:100; opacity:0; pointer-events:none; transition:.25s ease; backdrop-filter:blur(14px); font-weight:900; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .footer { border-top:1px solid var(--line); color:var(--muted); padding:28px 18px; text-align:center; line-height:1.7; background:rgba(0,0,0,.12); }
+    .hide { display:none !important; }
+    .profile-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .mini-list { display:grid; gap:10px; }
+    .mini-item { padding:13px; border-radius:16px; background:rgba(255,255,255,.065); border:1px solid var(--line); display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .legal-box { padding:16px; border-radius:18px; border:1px solid rgba(255,209,102,.35); background:rgba(255,209,102,.10); color:var(--muted); line-height:1.7; }
+    @media (max-width: 980px) {
+      .hero, .write-layout { grid-template-columns:1fr; }
+      .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .controls { grid-template-columns:1fr 1fr; }
+      .controls input { grid-column:1/-1; }
+    }
+    @media (max-width: 680px) {
+      .brand-text { display:none; }
+      .nav { align-items:flex-start; }
+      .btn, .nav-btn, .primary, .danger, .soft { padding:9px 11px; font-size:13px; }
+      .hero-card { padding:24px; }
+      .stats, .grid, .controls, .two, .profile-grid { grid-template-columns:1fr; }
+      .section-head { flex-direction:column; align-items:flex-start; }
+      .reader-cover, .reader-content { padding:22px; }
+      .chapter-text { padding:16px; font-size:16px; }
+    }
+    @media print {
+      .topbar, .hero, .controls, .chips, .section-head, #library, #write, #profile, .footer, .comment-area, .reader-actions, .owner-tools { display:none !important; }
+      body { background:#fff !important; color:#111 !important; }
+      .container { padding:0 !important; max-width:none !important; }
+      .reader { display:block !important; box-shadow:none !important; border:0 !important; }
+      .reader-cover { background:#fff !important; color:#111 !important; padding:0 0 12px !important; border-bottom:2px solid #111; }
+      .reader-cover h2, .reader-cover p { color:#111 !important; }
+      .reader-content { padding:12px 0 !important; }
+      .chapter-tabs { display:none !important; }
+      .chapter-text { border:0 !important; background:transparent !important; color:#111 !important; padding:0 !important; }
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app" data-theme="dark">
+  <header class="topbar">
+    <nav class="nav">
+      <a href="#home" class="brand" aria-label="FANFIG Home">
+        <div class="logo">✦</div>
+        <div class="brand-text"><div>FANFIG</div><small>อ่าน • เขียน • แชร์</small></div>
+      </a>
+      <div class="nav-actions">
+        <button class="nav-btn active" data-nav="home">หน้าแรก</button>
+        <button class="nav-btn" data-nav="library">คลังฟิค</button>
+        <button class="nav-btn" data-nav="bookmarks">บุ๊กมาร์ก</button>
+        <button class="nav-btn" data-nav="write">เขียนฟิค</button>
+        <button class="nav-btn" data-nav="profile">โปรไฟล์</button>
+        <button class="btn" id="themeBtn">🌙 ธีม</button>
+        <button class="primary" id="loginBtn">เข้าสู่ระบบ</button>
+        <div class="auth-user" id="authUser">
+          <img class="avatar" id="authAvatar" alt="" />
+          <span class="name" id="authUserName"></span>
+          <button class="btn" id="logoutBtn">ออก</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero" id="home">
+      <div class="hero-card">
+        <span class="eyebrow">✨ FANFIG Complete — Community Ready</span>
+        <h1>เว็บแฟนฟิคที่พร้อมเป็น <span class="gradient-text">ชุมชนนักเขียน</span></h1>
+        <p class="lead">เวอร์ชันนี้เพิ่มระบบหลักให้ครบขึ้น: คลังฟิคสาธารณะผ่าน Firebase, สมัคร/เข้าสู่ระบบ, เจ้าของแก้ไข/ลบ/เพิ่มตอนได้, ไลก์, บุ๊กมาร์ก, คอมเมนต์, รายงานเนื้อหา, โปรไฟล์ และโหมดสำรองแบบ localStorage หากยังไม่ได้ตั้ง Firebase</p>
+        <div class="hero-actions">
+          <button class="primary" data-scroll="library">เริ่มอ่านเลย</button>
+          <button class="btn" data-scroll="write">+ เขียนเรื่องใหม่</button>
+          <button class="btn" id="randomBtn">🎲 สุ่มเรื่องอ่าน</button>
+          <button class="btn" id="exportBtn">⬇️ Export JSON</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><b id="statStories">0</b><span>เรื่องทั้งหมด</span></div>
+          <div class="stat"><b id="statChapters">0</b><span>ตอนทั้งหมด</span></div>
+          <div class="stat"><b id="statBookmarks">0</b><span>บุ๊กมาร์กของฉัน</span></div>
+          <div class="stat"><b id="statUsers">1</b><span>สถานะระบบ</span></div>
+        </div>
+      </div>
+      <aside class="feature-panel panel">
+        <div class="feature"><h3>🌐 Public Library</h3><p>เมื่อเชื่อม Firebase แล้ว ทุกคนจะเห็นเรื่องจากคอลเลกชันเดียวกัน ไม่แยกเป็นคลังส่วนตัวเหมือนเวอร์ชันก่อน</p></div>
+        <div class="feature"><h3>🛡️ Owner Controls</h3><p>เจ้าของเรื่องเท่านั้นที่เห็นปุ่มแก้ไข ลบ เพิ่มตอน และจัดการตอน ลดปัญหาคนอื่นแก้เรื่องของเรา</p></div>
+        <div class="feature"><h3>💬 Reader System</h3><p>ผู้อ่านสามารถไลก์ บุ๊กมาร์ก คอมเมนต์ รายงานเรื่อง และพิมพ์ตอนอ่านได้</p></div>
+      </aside>
+    </section>
+
+    <section id="library">
+      <div class="section-head">
+        <div><h2>คลัง FANFIG</h2><p id="libraryNote">ระบบจะใช้ Firebase เมื่อพร้อม และใช้ข้อมูลในเครื่องเป็นสำรอง</p></div>
+        <div class="row"><button class="btn" id="refreshBtn">รีเฟรช</button><button class="danger" id="resetBtn">รีเซ็ต Local</button></div>
+      </div>
+      <div class="controls">
+        <input class="field" id="searchInput" type="search" placeholder="ค้นหาชื่อเรื่อง / ผู้แต่ง / คำโปรย..." />
+        <select class="field" id="sortSelect"><option value="newest">ใหม่ล่าสุด</option><option value="popular">ยอดนิยม</option><option value="az">A-Z</option><option value="updated">อัปเดตล่าสุด</option></select>
+        <select class="field" id="statusSelect"><option value="all">ทุกสถานะ</option><option value="ongoing">กำลังเขียน</option><option value="complete">จบแล้ว</option></select>
+        <select class="field" id="scopeSelect"><option value="all">ทุกเรื่อง</option><option value="mine">เรื่องของฉัน</option><option value="liked">ที่ฉันไลก์</option></select>
+      </div>
+      <div class="chips" id="categoryChips"></div>
+      <div class="grid" id="storyGrid"></div>
+    </section>
+
+    <section class="reader" id="reader">
+      <div class="reader-cover" id="readerCover">
+        <div class="meta" id="readerMeta"></div>
+        <h2 id="readerTitle">ชื่อเรื่อง</h2>
+        <p id="readerDesc">คำอธิบาย</p>
+      </div>
+      <div class="reader-content">
+        <div class="reader-actions row" style="margin-bottom:16px;">
+          <button class="btn" id="backToLibrary">← กลับไปคลังฟิค</button>
+          <button class="btn" id="readerLike">♡ ไลก์</button>
+          <button class="btn" id="readerBookmark">☆ บุ๊กมาร์ก</button>
+          <button class="btn" id="reportBtn">⚑ รายงาน</button>
+          <button class="btn" onclick="window.print()">🖨️ พิมพ์ตอนนี้</button>
+        </div>
+        <div class="chapter-tabs" id="chapterTabs"></div>
+        <article class="chapter-text" id="chapterText"></article>
+
+        <div class="owner-tools panel hide" id="ownerTools">
+          <h3>🛠️ เครื่องมือเจ้าของเรื่อง</h3>
+          <p class="hint">คุณเป็นเจ้าของเรื่องนี้ จึงสามารถแก้ไขข้อมูล เพิ่มตอน แก้ตอน หรือลบเรื่องได้</p>
+          <div class="row">
+            <button class="primary" id="editStoryBtn">แก้ไขข้อมูลเรื่อง</button>
+            <button class="btn" id="openChapterModalBtn">เพิ่ม / แก้ไขตอน</button>
+            <button class="danger" id="deleteStoryBtn">ลบเรื่อง</button>
+          </div>
+        </div>
+
+        <div class="comment-area">
+          <h3>💬 คอมเมนต์</h3>
+          <div class="form-grid">
+            <input class="field" id="commentName" placeholder="ชื่อของคุณ" maxlength="40" />
+            <textarea class="field" id="commentText" placeholder="เขียนคอมเมนต์..." maxlength="600"></textarea>
+            <button class="primary" id="commentBtn">ส่งคอมเมนต์</button>
+          </div>
+          <div class="comments" id="comments"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="bookmarks">
+      <div class="section-head"><div><h2>บุ๊กมาร์กของฉัน</h2><p>เรื่องที่คุณกดเซฟไว้จะรวมอยู่ตรงนี้</p></div></div>
+      <div class="grid" id="bookmarkGrid"></div>
+    </section>
+
+    <section id="write">
+      <div class="section-head"><div><h2>เขียน / เผยแพร่ FANFIG</h2><p>ล็อกอินเพื่อเผยแพร่ลงคลังสาธารณะ ถ้าไม่ล็อกอินจะบันทึกเป็น Local Draft ในเครื่องนี้</p></div></div>
+      <div class="write-layout">
+        <form class="panel form-grid" id="storyForm">
+          <h3 id="formTitle">ข้อมูลเรื่อง</h3>
+          <input type="hidden" id="editingStoryId" />
+          <input class="field" id="titleField" placeholder="ชื่อเรื่อง" required />
+          <input class="field" id="authorField" placeholder="นามปากกา" required />
+          <div class="two">
+            <select class="field" id="categoryField" required>
+              <option value="">เลือกหมวดหมู่</option>
+              <option>Original</option><option>Fanfiction</option><option>Romance</option><option>Action</option><option>Fantasy</option><option>Drama</option><option>Comedy</option><option>School Life</option><option>Adventure</option><option>Horror</option><option>Sci-Fi</option>
+            </select>
+            <select class="field" id="statusField"><option value="ongoing">กำลังเขียน</option><option value="complete">จบแล้ว</option></select>
+          </div>
+          <textarea class="field" id="descField" placeholder="คำโปรย / เรื่องย่อ" required></textarea>
+          <input class="field" id="coverField" placeholder="URL รูปปก/ภาพพื้นหลัง (ไม่ใส่ก็ได้)" />
+          <div class="legal-box">⚠️ ถ้าเป็นแฟนฟิคจากผลงานที่มีลิขสิทธิ์ แนะนำให้อ่านฟรี ไม่ขายตอน/ไม่ใส่ paywall โดยตรง และควรมีระบบรายงานเนื้อหาตามที่ใส่ไว้ในไฟล์นี้</div>
+          <div id="firstChapterFields" class="form-grid">
+            <input class="field" id="chapterTitleField" placeholder="ชื่อตอนแรก เช่น ตอนที่ 1: จุดเริ่มต้น" />
+            <textarea class="field" id="chapterBodyField" placeholder="เนื้อหาตอนแรก..."></textarea>
+          </div>
+          <div class="row">
+            <button class="primary" type="submit" id="submitStoryBtn">เผยแพร่ลงคลัง</button>
+            <button class="btn hide" type="button" id="cancelEditBtn">ยกเลิกแก้ไข</button>
+          </div>
+        </form>
+        <aside class="panel">
+          <h3>ระบบที่เพิ่มให้ในเวอร์ชันนี้ ✨</h3>
+          <p class="hint">
+            ✅ คลังฟิคสาธารณะ Firestore collection: <b>stories</b><br>
+            ✅ โปรไฟล์ผู้ใช้ + บุ๊กมาร์กแยกตาม UID<br>
+            ✅ ไลก์ / ยอดวิว / คอมเมนต์ / รายงาน<br>
+            ✅ เจ้าของเรื่องแก้ไข ลบ เพิ่มตอน และแก้ตอน<br>
+            ✅ ทำงานแบบออฟไลน์ด้วย localStorage ได้<br>
+            ✅ Export JSON สำรองข้อมูลได้<br><br>
+            ถ้าจะเปิดใช้งานจริง อย่าลืมตั้ง Firestore Rules ใน Firebase Console ตามโน้ตท้ายไฟล์นี้
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="profile">
+      <div class="section-head"><div><h2>โปรไฟล์ / แผงควบคุม</h2><p id="profileNote">ดูสถิติของคุณและเรื่องที่คุณเขียน</p></div></div>
+      <div class="panel">
+        <div class="row" style="justify-content:space-between; align-items:flex-start;">
+          <div class="row"><img class="avatar" id="profileAvatar" alt=""><div><h3 id="profileName" style="margin:0;">Guest Reader</h3><p class="hint" id="profileEmail" style="margin:4px 0 0;">ยังไม่ได้เข้าสู่ระบบ</p></div></div>
+          <button class="primary" id="profileLoginBtn">เข้าสู่ระบบ / สมัครสมาชิก</button>
+        </div>
+        <div class="profile-grid">
+          <div class="stat"><b id="myStoriesCount">0</b><span>เรื่องของฉัน</span></div>
+          <div class="stat"><b id="myBookmarksCount">0</b><span>บุ๊กมาร์ก</span></div>
+          <div class="stat"><b id="myLikesCount">0</b><span>เรื่องที่ไลก์</span></div>
+        </div>
+        <h3 style="margin-top:22px;">เรื่องของฉัน</h3>
+        <div class="mini-list" id="myStoryList"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    FANFIG © 2026 — Complete Single HTML App<br>
+    <span id="footerMode">โหมด: กำลังตรวจสอบระบบ</span>
+  </footer>
+
+  <div class="toast" id="toast">บันทึกแล้ว</div>
+
+  <div class="modal" id="authModal" role="dialog" aria-modal="true">
+    <div class="modal-card" style="width:min(470px,100%);">
+      <div class="modal-head"><h3>เข้าสู่ระบบ FANFIG</h3><button class="icon-btn" data-close="authModal">✕</button></div>
+      <p class="hint">เข้าสู่ระบบเพื่อเผยแพร่เรื่องลงคลังสาธารณะและซิงก์บุ๊กมาร์ก</p>
+      <form class="form-grid" id="emailAuthForm">
+        <input class="field" id="authName" placeholder="ชื่อที่แสดง (ใช้ตอนสมัคร)" maxlength="50">
+        <input class="field" id="authEmail" type="email" placeholder="อีเมล" autocomplete="email" required>
+        <input class="field" id="authPassword" type="password" placeholder="รหัสผ่านอย่างน้อย 6 ตัว" minlength="6" autocomplete="current-password" required>
+        <button class="primary" type="submit">เข้าสู่ระบบด้วยอีเมล</button>
+        <button class="btn" id="signupBtn" type="button">สมัครสมาชิกด้วยอีเมล</button>
+      </form>
+      <div class="auth-divider">หรือ</div>
+      <button class="btn" style="width:100%;" id="googleBtn">G&nbsp; ดำเนินการต่อด้วย Google</button>
+      <button class="btn" style="width:100%; margin-top:8px;" id="facebookBtn">f&nbsp; ดำเนินการต่อด้วย Facebook</button>
+      <p class="message" id="authMessage"></p>
+      <p class="sync" id="syncStatus">ยังไม่ได้เข้าสู่ระบบ • ข้อมูลเก็บในอุปกรณ์นี้</p>
+    </div>
+  </div>
+
+  <div class="modal" id="chapterModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head"><h3>เพิ่ม / แก้ไขตอน</h3><button class="icon-btn" data-close="chapterModal">✕</button></div>
+      <div class="form-grid">
+        <select class="field" id="chapterSelect"><option value="new">+ เพิ่มตอนใหม่</option></select>
+        <input class="field" id="chapterEditTitle" placeholder="ชื่อตอน">
+        <textarea class="field" id="chapterEditBody" placeholder="เนื้อหาตอน"></textarea>
+        <div class="row" style="justify-content:flex-end;"><button class="danger" id="deleteChapterBtn">ลบตอนนี้</button><button class="primary" id="saveChapterBtn">บันทึกตอน</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="reportModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head"><h3>รายงานเนื้อหา</h3><button class="icon-btn" data-close="reportModal">✕</button></div>
+      <div class="form-grid">
+        <select class="field" id="reportReason"><option>ละเมิดลิขสิทธิ์</option><option>เนื้อหาไม่เหมาะสม</option><option>สแปม</option><option>ข้อมูลส่วนบุคคล</option><option>อื่น ๆ</option></select>
+        <textarea class="field" id="reportText" placeholder="รายละเอียดเพิ่มเติม"></textarea>
+        <button class="primary" id="sendReportBtn">ส่งรายงาน</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true">
+    <div class="modal-card" style="width:min(520px,100%);">
+      <div class="modal-head"><h3 id="confirmTitle">ยืนยัน</h3><button class="icon-btn" data-close="confirmModal">✕</button></div>
+      <p class="hint" id="confirmText">ต้องการทำรายการนี้หรือไม่?</p>
+      <div class="row" style="justify-content:flex-end;"><button class="btn" data-close="confirmModal">ยกเลิก</button><button class="danger" id="confirmActionBtn">ยืนยัน</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8SNHz4rudIYyC2N5LTeVCiF4vgagY9Dc",
+    authDomain: "fanfig-alice.firebaseapp.com",
+    projectId: "fanfig-alice",
+    storageBucket: "fanfig-alice.firebasestorage.app",
+    messagingSenderId: "188295614162",
+    appId: "1:188295614162:web:5894d2fc0afad29db0e70b",
+    measurementId: "G-MY12WM1KYX"
+  };
+
+  const LOCAL_STORIES = "fanfig_complete_public_stories_v2";
+  const LOCAL_BOOKMARKS = "fanfig_complete_bookmarks_v2";
+  const LOCAL_LIKES = "fanfig_complete_likes_v2";
+  const LOCAL_THEME = "fanfig_complete_theme_v2";
+  const LOCAL_CLIENT = "fanfig_complete_client_id_v2";
+  const VIEWED_KEY = "fanfig_complete_viewed_v2";
+
+  const sampleStories = [
+    {
+      id: "sample-moonlight",
+      title: "Moonlight Re:Code",
+      author: "Alice Z.",
+      category: "Fantasy",
+      status: "ongoing",
+      desc: "เด็กสาวผู้ตื่นขึ้นพร้อมระบบแก้ไขโชคชะตา ต้องช่วยตัวเอกที่โลกตั้งใจให้ตาย",
+      cover: "",
+      ownerUid: "sample",
+      ownerName: "Alice Z.",
+      views: 12840,
+      likesCount: 943,
+      bookmarksCount: 250,
+      likedBy: [],
+      createdAt: Date.now() - 86400000 * 3,
+      updatedAt: Date.now() - 86400000,
+      accent: ["#ff4fd8", "#7c5cff"],
+      chapters: [
+        { id: "c1", title: "ตอนที่ 1: เสียงเรียกใต้แสงจันทร์", body: "เสียงฝนตกกระทบหน้าต่างดังเป็นจังหวะเหมือนใครบางคนกำลังเคาะเรียกจากอีกฟากของความฝัน\n\nลูน่าลืมตาขึ้นในห้องที่ไม่รู้จัก เพดานสีดำสนิทมีเส้นแสงสีเงินไหลผ่านเหมือนท้องฟ้าที่ถูกเย็บด้วยดวงดาว\n\n“ในที่สุด... เธอก็กลับมา”\n\nเสียงนั้นดังจากกระจกบานใหญ่ปลายเตียง แต่เงาที่สะท้อนกลับมาไม่ใช่เธอ มันคือเด็กสาวอีกคนที่มีดวงตาเหมือนพระจันทร์แตกเป็นเสี่ยง\n\n[ระบบ Re:Code เริ่มทำงาน]\n[เป้าหมายแรก: อย่าให้ตัวเอกตาย]", createdAt: Date.now() - 86400000 * 3 },
+        { id: "c2", title: "ตอนที่ 2: ตัวเอกที่ไม่ควรรอด", body: "เมืองอาเธเรียสกำลังลุกไหม้\n\nลูน่าวิ่งฝ่าถนนหินที่แตกร้าว ขณะที่ทหารเงาไล่ตามหลังมาเหมือนฝันร้ายที่มีรูปร่าง\n\n“หนีไป!” เขาตะโกน\n\nแต่ระบบกลางอากาศตอบแทนเธออย่างเย็นชา\n\n[หากเขาตาย เส้นเรื่องจะล่มสลาย]\n[หากเธอช่วยเขา เธอจะถูกโลกจดจำ]\n\nลูน่ากำหมัดแน่น\n\n“งั้นก็ให้โลกจำไปเลยสิ”", createdAt: Date.now() - 86400000 * 2 }
+      ],
+      comments: [{ id: "m1", uid: "sample", name: "Reader01", text: "เปิดเรื่องสวยมาก อยากอ่านต่อ!", time: Date.now() - 8000000 }]
+    },
+    {
+      id: "sample-idol",
+      title: "Idol After Midnight",
+      author: "KiraKira",
+      category: "Romance",
+      status: "ongoing",
+      desc: "ไอดอลสาวต้องปลอมตัวเป็นนักเรียนธรรมดา แต่ความลับดันถูกประธานชมรมดนตรีจับได้ในคืนซ้อมลับ",
+      cover: "",
+      ownerUid: "sample",
+      ownerName: "KiraKira",
+      views: 21500,
+      likesCount: 1801,
+      bookmarksCount: 430,
+      likedBy: [],
+      createdAt: Date.now() - 86400000 * 7,
+      updatedAt: Date.now() - 86400000 * 2,
+      accent: ["#ff7ab6", "#ffd166"],
+      chapters: [{ id: "c1", title: "ตอนที่ 1: ความลับหลังเวที", body: "แสงไฟบนเวทีดับลงพร้อมเสียงกรี๊ดที่ยังค้างอยู่ในอากาศ\n\nมินะยิ้มให้แฟนคลับเป็นครั้งสุดท้าย ก่อนจะวิ่งลงหลังเวที ถอดวิก เปลี่ยนเสื้อ และเก็บตัวตนของไอดอลชื่อ “MIRA” ลงในกระเป๋านักเรียน\n\nอีกสามสิบนาที เธอต้องกลับไปเป็นนักเรียนธรรมดาที่ไม่มีใครรู้จัก\n\nแต่คืนนี้ทุกอย่างผิดแผน\n\nเมื่อเธอเปิดประตูห้องซ้อมดนตรี ประธานชมรมที่ควรกลับบ้านไปแล้วกลับยืนอยู่ตรงนั้น\n\n“ร้องเพลงเมื่อกี้... เพราะดีนะ MIRA”", createdAt: Date.now() - 86400000 * 7 }],
+      comments: []
+    },
+    {
+      id: "sample-blade",
+      title: "Blade of Zero Class",
+      author: "Nox",
+      category: "Action",
+      status: "complete",
+      desc: "นักเรียนห้องไร้แรงก์ถูกดูถูกทั้งโรงเรียน จนดาบต้องสาปเลือกเขาเป็นเจ้าของในวันทดสอบพลัง",
+      cover: "",
+      ownerUid: "sample",
+      ownerName: "Nox",
+      views: 33200,
+      likesCount: 2540,
+      bookmarksCount: 880,
+      likedBy: [],
+      createdAt: Date.now() - 86400000 * 15,
+      updatedAt: Date.now() - 86400000 * 5,
+      accent: ["#00e0ff", "#2dd4bf"],
+      chapters: [{ id: "c1", title: "ตอนที่ 1: ห้องศูนย์", body: "ห้องศูนย์คือชื่อเรียกของพวกไร้ค่า\n\nไม่มีพลัง ไม่มีตระกูล ไม่มีอนาคต\n\nอากิระได้ยินคำพวกนั้นมาตลอดสิบหกปี จนแทบเชื่อว่ามันคือความจริง\n\nในพิธีเลือกอาวุธ นักเรียนทุกคนได้รับดาบ หอก คทา หรือธนูที่เปล่งแสงงดงาม มีเพียงแท่นของเขาที่ว่างเปล่า\n\nเสียงหัวเราะดังขึ้นรอบสนาม\n\nแต่ทันใดนั้น พื้นหินใต้เท้าก็แตกออก ดาบสีดำสนิทพุ่งขึ้นมาจากความมืด\n\nและทั้งโรงเรียนก็เงียบลงเมื่อมันเอ่ยชื่อเขา\n\n“เจ้านายคนใหม่ของข้า... อากิระ”", createdAt: Date.now() - 86400000 * 15 }],
+      comments: [{ id: "m1", uid: "sample", name: "สายบู๊", text: "เปิดตอนแรกมาเดือดมาก", time: Date.now() - 2000000 }]
+    }
+  ];
+
+  let auth = null;
+  let db = null;
+  let unsubscribeStories = null;
+  let currentUser = null;
+  let stories = loadLocalStories();
+  let bookmarks = loadArray(LOCAL_BOOKMARKS);
+  let localLikes = loadArray(LOCAL_LIKES);
+  let activeCategory = "all";
+  let currentStoryId = null;
+  let currentChapterIndex = 0;
+  let onlineMode = false;
+  let confirmCallback = null;
+
+  function uid() {
+    let id = localStorage.getItem(LOCAL_CLIENT);
+    if (!id) { id = "guest-" + randomId(); localStorage.setItem(LOCAL_CLIENT, id); }
+    return currentUser?.uid || id;
+  }
+  function randomId() {
+    if (crypto?.randomUUID) return crypto.randomUUID();
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+  }
+  function now() { return Date.now(); }
+  function loadArray(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } }
+  function saveArray(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+  function loadLocalStories() {
+    try {
+      const raw = localStorage.getItem(LOCAL_STORIES);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    localStorage.setItem(LOCAL_STORIES, JSON.stringify(sampleStories));
+    return structuredClone(sampleStories);
+  }
+  function saveLocalStories() { localStorage.setItem(LOCAL_STORIES, JSON.stringify(stories)); }
+  function escapeHtml(str) { return String(str ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+  function formatNumber(num) { return new Intl.NumberFormat("th-TH", { notation: num > 9999 ? "compact" : "standard" }).format(num || 0); }
+  function formatDate(time) {
+    const value = normalizeTime(time);
+    return new Intl.DateTimeFormat("th-TH", { dateStyle: "medium", timeStyle: "short" }).format(value);
+  }
+  function normalizeTime(value) {
+    if (!value) return now();
+    if (typeof value === "number") return value;
+    if (value.seconds) return value.seconds * 1000;
+    if (value.toMillis) return value.toMillis();
+    return now();
+  }
+  function toast(message) {
+    const el = $("#toast");
+    el.textContent = message;
+    el.classList.add("show");
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => el.classList.remove("show"), 1900);
+  }
+  function setSync(message) { $("#syncStatus").textContent = message; $("#footerMode").textContent = "โหมด: " + message; }
+  function isOwner(story) { return Boolean(currentUser && story?.ownerUid === currentUser.uid); }
+  function isLiked(story) { return (story?.likedBy || []).includes(uid()) || localLikes.includes(story?.id); }
+  function isBookmarked(id) { return bookmarks.includes(id); }
+
+  function storyToFirestore(story) {
+    return {
+      title: story.title,
+      author: story.author,
+      category: story.category,
+      status: story.status,
+      desc: story.desc,
+      cover: story.cover || "",
+      ownerUid: story.ownerUid,
+      ownerName: story.ownerName || story.author,
+      ownerPhoto: story.ownerPhoto || "",
+      views: Number(story.views || 0),
+      likesCount: Number(story.likesCount || 0),
+      bookmarksCount: Number(story.bookmarksCount || 0),
+      likedBy: story.likedBy || [],
+      createdAt: story.createdAt || now(),
+      updatedAt: now(),
+      accent: story.accent || randomPalette(),
+      chapters: story.chapters || [],
+      comments: story.comments || []
+    };
+  }
+  function docToStory(doc) {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      cloud: true,
+      ...data,
+      createdAt: normalizeTime(data.createdAt),
+      updatedAt: normalizeTime(data.updatedAt),
+      views: Number(data.views || 0),
+      likesCount: Number(data.likesCount || 0),
+      bookmarksCount: Number(data.bookmarksCount || 0),
+      likedBy: Array.isArray(data.likedBy) ? data.likedBy : [],
+      chapters: Array.isArray(data.chapters) ? data.chapters : [],
+      comments: Array.isArray(data.comments) ? data.comments : []
+    };
+  }
+  function randomPalette() {
+    const palettes = [["#ff4fd8","#7c5cff"],["#00e0ff","#7c5cff"],["#ffd166","#ff5c7a"],["#4dffb5","#00e0ff"],["#ff7ab6","#ffd166"],["#a78bfa","#22d3ee"]];
+    return palettes[Math.floor(Math.random() * palettes.length)];
+  }
+
+  function initializeFirebase() {
+    try {
+      if (!window.firebase) throw new Error("Firebase SDK not loaded");
+      firebase.initializeApp(firebaseConfig);
+      auth = firebase.auth();
+      db = firebase.firestore();
+      auth.onAuthStateChanged(async user => {
+        currentUser = user;
+        updateAuthUI();
+        if (user) {
+          await db.collection("users").doc(user.uid).set({
+            displayName: user.displayName || "",
+            email: user.email || "",
+            photoURL: user.photoURL || "",
+            lastLoginAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+          await loadUserProfile();
+          listenPublicStories();
+        } else {
+          currentUser = null;
+          bookmarks = loadArray(LOCAL_BOOKMARKS);
+          listenPublicStories();
+        }
+      });
+    } catch (error) {
+      console.warn(error);
+      onlineMode = false;
+      setSync("Local only • ยังไม่เชื่อม Firebase");
+      renderAll();
+    }
+  }
+
+  async function loadUserProfile() {
+    if (!currentUser || !db) return;
+    try {
+      const ref = db.collection("users").doc(currentUser.uid).collection("profile").doc("app");
+      const snap = await ref.get();
+      if (snap.exists) {
+        const data = snap.data();
+        bookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : [];
+      } else {
+        await ref.set({ bookmarks, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      }
+      saveArray(LOCAL_BOOKMARKS, bookmarks);
+    } catch (error) {
+      console.error(error);
+      bookmarks = loadArray(LOCAL_BOOKMARKS);
+    }
+  }
+
+  function listenPublicStories() {
+    if (!db) { renderAll(); return; }
+    if (unsubscribeStories) unsubscribeStories();
+    setSync("กำลังเชื่อม Firebase...");
+    unsubscribeStories = db.collection("stories").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+      onlineMode = true;
+      const cloudStories = snapshot.docs.map(docToStory);
+      stories = cloudStories.length ? cloudStories : loadLocalStories();
+      $("#libraryNote").textContent = cloudStories.length ? "กำลังใช้คลังสาธารณะจาก Firebase แบบเรียลไทม์" : "Firebase พร้อมแล้ว แต่ยังไม่มีเรื่องในระบบ จึงแสดงข้อมูลตัวอย่าง";
+      setSync(cloudStories.length ? "Firebase online • Public Library" : "Firebase online • ยังไม่มีข้อมูลจริง");
+      renderAll();
+    }, error => {
+      console.error(error);
+      onlineMode = false;
+      stories = loadLocalStories();
+      $("#libraryNote").textContent = "โหลด Firebase ไม่สำเร็จ จึงใช้ข้อมูลในเครื่องแทน";
+      setSync("Local fallback • Firebase อ่านไม่ได้");
+      renderAll();
+    });
+  }
+
+  async function saveUserBookmarks() {
+    saveArray(LOCAL_BOOKMARKS, bookmarks);
+    if (currentUser && db) {
+      await db.collection("users").doc(currentUser.uid).collection("profile").doc("app").set({
+        bookmarks,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    }
+  }
+
+  async function createOrUpdateStory(event) {
+    event.preventDefault();
+    const editingId = $("#editingStoryId").value;
+    const title = $("#titleField").value.trim();
+    const author = $("#authorField").value.trim();
+    const category = $("#categoryField").value;
+    const status = $("#statusField").value;
+    const desc = $("#descField").value.trim();
+    const cover = $("#coverField").value.trim();
+    const chapterTitle = $("#chapterTitleField").value.trim();
+    const chapterBody = $("#chapterBodyField").value.trim();
+    if (!title || !author || !category || !desc) return toast("กรอกข้อมูลเรื่องให้ครบก่อนนะ");
+
+    if (editingId) {
+      const story = stories.find(s => s.id === editingId);
+      if (!story || !isOwner(story)) return toast("แก้ไขได้เฉพาะเจ้าของเรื่อง");
+      const update = { title, author, category, status, desc, cover, updatedAt: now() };
+      Object.assign(story, update);
+      if (story.cloud && db) {
+        await db.collection("stories").doc(story.id).set(update, { merge: true });
+      } else {
+        saveLocalStories();
+        renderAll();
+      }
+      cancelEdit();
+      toast("อัปเดตข้อมูลเรื่องแล้ว ✨");
+      openReader(story.id, currentChapterIndex);
+      return;
+    }
+
+    if (!chapterTitle || !chapterBody) return toast("กรอกชื่อตอนแรกและเนื้อหาตอนแรกก่อนนะ");
+    const story = {
+      id: randomId(),
+      title, author, category, status, desc, cover,
+      ownerUid: currentUser?.uid || uid(),
+      ownerName: currentUser?.displayName || author,
+      ownerPhoto: currentUser?.photoURL || "",
+      views: 0, likesCount: 0, bookmarksCount: 0, likedBy: [],
+      createdAt: now(), updatedAt: now(), accent: randomPalette(),
+      chapters: [{ id: randomId(), title: chapterTitle, body: chapterBody, createdAt: now(), updatedAt: now() }],
+      comments: []
+    };
+
+    if (currentUser && db && onlineMode) {
+      const doc = await db.collection("stories").add(storyToFirestore(story));
+      toast("เผยแพร่ลงคลังสาธารณะแล้ว 🚀");
+      $("#storyForm").reset();
+      openReader(doc.id);
+    } else {
+      stories.unshift(story);
+      saveLocalStories();
+      toast("บันทึกเป็น Local Draft แล้ว • ล็อกอินเพื่อเผยแพร่จริง");
+      $("#storyForm").reset();
+      renderAll();
+      openReader(story.id);
+    }
+  }
+
+  async function updateStoryDoc(story, patch) {
+    Object.assign(story, patch, { updatedAt: now() });
+    if (story.cloud && db) await db.collection("stories").doc(story.id).set({ ...patch, updatedAt: now() }, { merge: true });
+    else { saveLocalStories(); renderAll(); }
+  }
+
+  async function deleteCurrentStory() {
+    const story = getCurrentStory();
+    if (!story || !isOwner(story)) return;
+    if (story.cloud && db) await db.collection("stories").doc(story.id).delete();
+    else { stories = stories.filter(s => s.id !== story.id); saveLocalStories(); renderAll(); }
+    currentStoryId = null;
+    $("#reader").classList.remove("active");
+    toast("ลบเรื่องแล้ว");
+  }
+
+  function startEditStory() {
+    const story = getCurrentStory();
+    if (!story || !isOwner(story)) return toast("แก้ไขได้เฉพาะเจ้าของเรื่อง");
+    $("#editingStoryId").value = story.id;
+    $("#titleField").value = story.title || "";
+    $("#authorField").value = story.author || "";
+    $("#categoryField").value = story.category || "";
+    $("#statusField").value = story.status || "ongoing";
+    $("#descField").value = story.desc || "";
+    $("#coverField").value = story.cover || "";
+    $("#firstChapterFields").classList.add("hide");
+    $("#formTitle").textContent = "แก้ไขข้อมูลเรื่อง";
+    $("#submitStoryBtn").textContent = "บันทึกการแก้ไข";
+    $("#cancelEditBtn").classList.remove("hide");
+    $("#write").scrollIntoView({ behavior: "smooth" });
+  }
+  function cancelEdit() {
+    $("#editingStoryId").value = "";
+    $("#storyForm").reset();
+    $("#firstChapterFields").classList.remove("hide");
+    $("#formTitle").textContent = "ข้อมูลเรื่อง";
+    $("#submitStoryBtn").textContent = "เผยแพร่ลงคลัง";
+    $("#cancelEditBtn").classList.add("hide");
+    if (currentUser) $("#authorField").value = currentUser.displayName || "";
+  }
+
+  function openChapterModal() {
+    const story = getCurrentStory();
+    if (!story || !isOwner(story)) return;
+    $("#chapterSelect").innerHTML = '<option value="new">+ เพิ่มตอนใหม่</option>' + story.chapters.map((c, i) => `<option value="${i}">${escapeHtml(c.title)}</option>`).join("");
+    $("#chapterSelect").value = "new";
+    $("#chapterEditTitle").value = "";
+    $("#chapterEditBody").value = "";
+    $("#deleteChapterBtn").classList.add("hide");
+    $("#chapterModal").classList.add("active");
+  }
+  function loadChapterIntoForm() {
+    const story = getCurrentStory();
+    const val = $("#chapterSelect").value;
+    if (!story || val === "new") {
+      $("#chapterEditTitle").value = "";
+      $("#chapterEditBody").value = "";
+      $("#deleteChapterBtn").classList.add("hide");
+      return;
+    }
+    const chapter = story.chapters[Number(val)];
+    $("#chapterEditTitle").value = chapter?.title || "";
+    $("#chapterEditBody").value = chapter?.body || "";
+    $("#deleteChapterBtn").classList.toggle("hide", story.chapters.length <= 1);
+  }
+  async function saveChapter() {
+    const story = getCurrentStory();
+    if (!story || !isOwner(story)) return;
+    const title = $("#chapterEditTitle").value.trim();
+    const body = $("#chapterEditBody").value.trim();
+    if (!title || !body) return toast("กรอกชื่อตอนและเนื้อหาก่อนนะ");
+    const val = $("#chapterSelect").value;
+    const chapters = structuredClone(story.chapters || []);
+    if (val === "new") chapters.push({ id: randomId(), title, body, createdAt: now(), updatedAt: now() });
+    else chapters[Number(val)] = { ...chapters[Number(val)], title, body, updatedAt: now() };
+    await updateStoryDoc(story, { chapters });
+    $("#chapterModal").classList.remove("active");
+    currentChapterIndex = val === "new" ? chapters.length - 1 : Number(val);
+    toast("บันทึกตอนแล้ว");
+    openReader(story.id, currentChapterIndex);
+  }
+  async function deleteChapter() {
+    const story = getCurrentStory();
+    if (!story || !isOwner(story) || story.chapters.length <= 1) return;
+    const idx = Number($("#chapterSelect").value);
+    if (Number.isNaN(idx)) return;
+    const chapters = structuredClone(story.chapters);
+    chapters.splice(idx, 1);
+    await updateStoryDoc(story, { chapters });
+    $("#chapterModal").classList.remove("active");
+    currentChapterIndex = 0;
+    toast("ลบตอนแล้ว");
+    openReader(story.id, 0);
+  }
+
+  async function toggleLike(id) {
+    const story = stories.find(s => s.id === id);
+    if (!story) return;
+    const actor = uid();
+    const active = isLiked(story);
+    if (story.cloud && db) {
+      await db.collection("stories").doc(story.id).update({
+        likedBy: active ? firebase.firestore.FieldValue.arrayRemove(actor) : firebase.firestore.FieldValue.arrayUnion(actor),
+        likesCount: firebase.firestore.FieldValue.increment(active ? -1 : 1),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } else {
+      story.likedBy = story.likedBy || [];
+      if (active) { story.likedBy = story.likedBy.filter(x => x !== actor); localLikes = localLikes.filter(x => x !== id); story.likesCount = Math.max(0, (story.likesCount || 0) - 1); }
+      else { story.likedBy.push(actor); if (!localLikes.includes(id)) localLikes.push(id); story.likesCount = (story.likesCount || 0) + 1; }
+      saveArray(LOCAL_LIKES, localLikes);
+      saveLocalStories();
+      renderAll();
+    }
+    toast(active ? "นำออกจากเรื่องที่ไลก์แล้ว" : "กดไลก์แล้ว ♡");
+    renderReaderButtons();
+  }
+
+  async function toggleBookmark(id) {
+    const active = bookmarks.includes(id);
+    bookmarks = active ? bookmarks.filter(x => x !== id) : [...bookmarks, id];
+    await saveUserBookmarks();
+    const story = stories.find(s => s.id === id);
+    if (story) {
+      if (story.cloud && db) await db.collection("stories").doc(story.id).update({ bookmarksCount: firebase.firestore.FieldValue.increment(active ? -1 : 1) }).catch(()=>{});
+      else { story.bookmarksCount = Math.max(0, (story.bookmarksCount || 0) + (active ? -1 : 1)); saveLocalStories(); }
+    }
+    toast(active ? "นำออกจากบุ๊กมาร์กแล้ว" : "เพิ่มเข้าบุ๊กมาร์กแล้ว ★");
+    renderAll();
+    renderReaderButtons();
+  }
+
+  async function addComment() {
+    const story = getCurrentStory();
+    if (!story) return;
+    const name = ($("#commentName").value.trim() || currentUser?.displayName || "นักอ่านนิรนาม").slice(0, 40);
+    const text = $("#commentText").value.trim();
+    if (!text) return toast("กรุณาเขียนคอมเมนต์ก่อนนะ");
+    const comment = { id: randomId(), uid: uid(), name, text, time: now() };
+    if (story.cloud && db) await db.collection("stories").doc(story.id).update({ comments: firebase.firestore.FieldValue.arrayUnion(comment), updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    else { story.comments = story.comments || []; story.comments.push(comment); saveLocalStories(); renderComments(); }
+    $("#commentText").value = "";
+    toast("ส่งคอมเมนต์แล้ว 💬");
+  }
+
+  async function sendReport() {
+    const story = getCurrentStory();
+    if (!story) return;
+    const report = { storyId: story.id, storyTitle: story.title, reporterUid: uid(), reason: $("#reportReason").value, detail: $("#reportText").value.trim(), time: now() };
+    if (db && onlineMode) await db.collection("reports").add({ ...report, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+    else {
+      const reports = loadArray("fanfig_reports_local_v2");
+      reports.push(report);
+      saveArray("fanfig_reports_local_v2", reports);
+    }
+    $("#reportText").value = "";
+    $("#reportModal").classList.remove("active");
+    toast("ส่งรายงานแล้ว ขอบคุณที่ช่วยดูแลชุมชน");
+  }
+
+  async function incrementView(story) {
+    const viewed = loadArray(VIEWED_KEY);
+    const key = `${story.id}:${new Date().toISOString().slice(0,10)}`;
+    if (viewed.includes(key)) return;
+    viewed.push(key);
+    saveArray(VIEWED_KEY, viewed.slice(-600));
+    story.views = (story.views || 0) + 1;
+    if (story.cloud && db) await db.collection("stories").doc(story.id).update({ views: firebase.firestore.FieldValue.increment(1) }).catch(()=>{});
+    else saveLocalStories();
+  }
+
+  function getCurrentStory() { return stories.find(s => s.id === currentStoryId); }
+  async function openReader(id, chapterIndex = 0) {
+    const story = stories.find(s => s.id === id);
+    if (!story) return;
+    currentStoryId = id;
+    currentChapterIndex = Math.min(chapterIndex, Math.max(0, (story.chapters || []).length - 1));
+    await incrementView(story);
+    $("#reader").classList.add("active");
+    $("#readerTitle").textContent = story.title;
+    $("#readerDesc").textContent = story.desc;
+    const bg = story.cover ? `linear-gradient(135deg, rgba(0,0,0,.35), rgba(0,0,0,.25)), url('${story.cover.replaceAll("'", "%27")}') center/cover` : `linear-gradient(135deg, ${story.accent?.[0] || "#ff4fd8"}, ${story.accent?.[1] || "#7c5cff"}, rgba(0,224,255,.32))`;
+    $("#readerCover").style.background = bg;
+    $("#readerMeta").innerHTML = `<span class="badge">#${escapeHtml(story.category)}</span><span class="badge ${story.status === "complete" ? "ok" : "warn"}">${story.status === "complete" ? "จบแล้ว" : "กำลังเขียน"}</span><span class="badge">โดย ${escapeHtml(story.author)}</span><span class="badge">👁 ${formatNumber(story.views)}</span><span class="badge">❤ ${formatNumber(story.likesCount)}</span>`;
+    renderChapterTabs();
+    renderChapterText();
+    renderComments();
+    renderReaderButtons();
+    $("#ownerTools").classList.toggle("hide", !isOwner(story));
+    $("#reader").scrollIntoView({ behavior: "smooth", block: "start" });
+    renderStats();
+    renderStories();
+  }
+  function renderChapterTabs() {
+    const story = getCurrentStory();
+    if (!story) return;
+    $("#chapterTabs").innerHTML = (story.chapters || []).map((chapter, i) => `<button class="chapter-tab ${i === currentChapterIndex ? "active" : ""}" data-chapter="${i}">${escapeHtml(chapter.title || `ตอนที่ ${i+1}`)}</button>`).join("");
+    $$('[data-chapter]').forEach(btn => btn.addEventListener("click", () => { currentChapterIndex = Number(btn.dataset.chapter); renderChapterTabs(); renderChapterText(); }));
+  }
+  function renderChapterText() {
+    const story = getCurrentStory();
+    const chapter = story?.chapters?.[currentChapterIndex];
+    $("#chapterText").textContent = chapter?.body || "ยังไม่มีเนื้อหาในตอนนี้";
+  }
+  function renderComments() {
+    const story = getCurrentStory();
+    const comments = story?.comments || [];
+    if (!comments.length) { $("#comments").innerHTML = `<div class="comment">ยังไม่มีคอมเมนต์ เป็นคนแรกที่คอมเมนต์ได้เลย ✨</div>`; return; }
+    $("#comments").innerHTML = comments.slice().sort((a,b) => normalizeTime(b.time)-normalizeTime(a.time)).map(c => `<div class="comment"><b>${escapeHtml(c.name)}</b><small> • ${formatDate(c.time)}</small><br>${escapeHtml(c.text)}</div>`).join("");
+  }
+  function renderReaderButtons() {
+    const story = getCurrentStory();
+    if (!story) return;
+    $("#readerLike").textContent = isLiked(story) ? "♥ ไลก์แล้ว" : "♡ ไลก์";
+    $("#readerLike").classList.toggle("active", isLiked(story));
+    $("#readerBookmark").textContent = isBookmarked(story.id) ? "★ บุ๊กมาร์กแล้ว" : "☆ บุ๊กมาร์ก";
+    $("#readerBookmark").classList.toggle("active", isBookmarked(story.id));
+  }
+
+  function categories() { return ["all", ...new Set(stories.map(s => s.category).filter(Boolean))]; }
+  function renderChips() {
+    const labels = { all:"ทั้งหมด", Original:"ออริจินัล", Fanfiction:"แฟนฟิค", Romance:"โรแมนซ์", Action:"แอ็กชัน", Fantasy:"แฟนตาซี", Drama:"ดราม่า", Comedy:"คอมเมดี้", "School Life":"ชีวิตโรงเรียน", Adventure:"ผจญภัย", Horror:"สยองขวัญ", "Sci-Fi":"ไซไฟ" };
+    $("#categoryChips").innerHTML = categories().map(cat => `<button class="chip ${activeCategory === cat ? "active" : ""}" data-category="${escapeHtml(cat)}">${labels[cat] || escapeHtml(cat)}</button>`).join("");
+    $$('.chip').forEach(btn => btn.addEventListener("click", () => { activeCategory = btn.dataset.category; renderChips(); renderStories(); }));
+  }
+  function getFilteredStories() {
+    const q = $("#searchInput").value.trim().toLowerCase();
+    const sort = $("#sortSelect").value;
+    const status = $("#statusSelect").value;
+    const scope = $("#scopeSelect").value;
+    let result = stories.filter(story => {
+      const matchCategory = activeCategory === "all" || story.category === activeCategory;
+      const matchStatus = status === "all" || story.status === status;
+      const text = `${story.title} ${story.author} ${story.desc} ${story.category}`.toLowerCase();
+      const matchScope = scope === "all" || (scope === "mine" && story.ownerUid === currentUser?.uid) || (scope === "liked" && isLiked(story));
+      return matchCategory && matchStatus && text.includes(q) && matchScope;
+    });
+    if (sort === "newest") result.sort((a,b) => normalizeTime(b.createdAt)-normalizeTime(a.createdAt));
+    if (sort === "updated") result.sort((a,b) => normalizeTime(b.updatedAt)-normalizeTime(a.updatedAt));
+    if (sort === "popular") result.sort((a,b) => ((b.views||0)+(b.likesCount||0)*10)-((a.views||0)+(a.likesCount||0)*10));
+    if (sort === "az") result.sort((a,b) => (a.title||"").localeCompare(b.title||""));
+    return result;
+  }
+  function storyCard(story) {
+    const gradient = story.cover ? `linear-gradient(135deg, rgba(0,0,0,.28), rgba(0,0,0,.15)), url('${story.cover.replaceAll("'", "%27")}') center/cover` : `linear-gradient(135deg, ${story.accent?.[0] || "#ff4fd8"}, ${story.accent?.[1] || "#7c5cff"})`;
+    return `<article class="story-card">
+      <div class="cover" style="background:${gradient};"><h3>${escapeHtml(story.title)}</h3></div>
+      <div class="story-body">
+        <div class="meta"><span class="badge">#${escapeHtml(story.category)}</span><span class="badge ${story.status === "complete" ? "ok" : "warn"}">${story.status === "complete" ? "จบแล้ว" : "กำลังเขียน"}</span><span class="badge">${story.chapters?.length || 0} ตอน</span>${isOwner(story) ? '<span class="badge ok">เจ้าของ</span>' : ''}</div>
+        <p class="desc">${escapeHtml(story.desc)}</p>
+        <div class="story-foot"><span>👁 ${formatNumber(story.views)} • ❤ ${formatNumber(story.likesCount)} • ★ ${formatNumber(story.bookmarksCount)}</span><div class="row" style="gap:7px;"><button class="icon-btn ${isBookmarked(story.id) ? "active" : ""}" data-bookmark="${story.id}">${isBookmarked(story.id) ? "★" : "☆"}</button><button class="icon-btn" data-read="${story.id}">อ่าน</button></div></div>
+        <p class="hint" style="margin:12px 0 0;">โดย ${escapeHtml(story.author)} • อัปเดต ${formatDate(story.updatedAt || story.createdAt)}</p>
+      </div>
+    </article>`;
+  }
+  function renderStories() {
+    const filtered = getFilteredStories();
+    $("#storyGrid").innerHTML = filtered.length ? filtered.map(storyCard).join("") : `<div class="empty" style="grid-column:1/-1;">ไม่พบ FANFIG ที่ตรงกับการค้นหา ลองเปลี่ยนคำค้นหรือหมวดหมู่ดูนะ ✨</div>`;
+    bindCardButtons($("#storyGrid"));
+  }
+  function renderBookmarkGrid() {
+    const list = stories.filter(s => bookmarks.includes(s.id));
+    $("#bookmarkGrid").innerHTML = list.length ? list.map(storyCard).join("") : `<div class="empty" style="grid-column:1/-1;">ยังไม่มีบุ๊กมาร์ก กด ☆ บนเรื่องที่ชอบเพื่อเก็บไว้ตรงนี้</div>`;
+    bindCardButtons($("#bookmarkGrid"));
+  }
+  function bindCardButtons(root) {
+    root.querySelectorAll('[data-read]').forEach(btn => btn.addEventListener("click", () => openReader(btn.dataset.read)));
+    root.querySelectorAll('[data-bookmark]').forEach(btn => btn.addEventListener("click", e => { e.stopPropagation(); toggleBookmark(btn.dataset.bookmark); }));
+  }
+  function renderStats() {
+    $("#statStories").textContent = stories.length;
+    $("#statChapters").textContent = stories.reduce((sum,s) => sum + (s.chapters?.length || 0), 0);
+    $("#statBookmarks").textContent = bookmarks.length;
+    $("#statUsers").textContent = onlineMode ? "Online" : "Local";
+  }
+  function renderProfile() {
+    const userName = currentUser?.displayName || currentUser?.email || "Guest Reader";
+    $("#profileName").textContent = userName;
+    $("#profileEmail").textContent = currentUser?.email || "ยังไม่ได้เข้าสู่ระบบ • ข้อมูลบางส่วนจะเก็บเฉพาะเครื่องนี้";
+    $("#profileAvatar").src = currentUser?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=7c5cff&color=fff`;
+    $("#profileLoginBtn").classList.toggle("hide", Boolean(currentUser));
+    const mine = stories.filter(s => s.ownerUid === currentUser?.uid || (!currentUser && s.ownerUid === uid()));
+    $("#myStoriesCount").textContent = mine.length;
+    $("#myBookmarksCount").textContent = bookmarks.length;
+    $("#myLikesCount").textContent = stories.filter(isLiked).length;
+    $("#myStoryList").innerHTML = mine.length ? mine.map(s => `<div class="mini-item"><div><b>${escapeHtml(s.title)}</b><br><span class="hint">${s.chapters?.length || 0} ตอน • ${formatNumber(s.views)} วิว</span></div><button class="btn" data-read="${s.id}">เปิด</button></div>`).join("") : `<div class="empty">ยังไม่มีเรื่องของคุณ เริ่มเขียนเรื่องแรกได้ที่เมนู “เขียนฟิค”</div>`;
+    bindCardButtons($("#myStoryList"));
+  }
+  function renderAll() {
+    renderStats(); renderChips(); renderStories(); renderBookmarkGrid(); renderProfile();
+    if (currentStoryId && stories.some(s => s.id === currentStoryId)) {
+      const idx = currentChapterIndex;
+      const story = getCurrentStory();
+      $("#ownerTools").classList.toggle("hide", !isOwner(story));
+      renderReaderButtons(); renderComments(); renderChapterTabs(); currentChapterIndex = idx; renderChapterText();
+    }
+  }
+
+  function updateAuthUI() {
+    const logged = Boolean(currentUser);
+    $("#loginBtn").classList.toggle("hide", logged);
+    $("#authUser").classList.toggle("active", logged);
+    if (logged) {
+      const name = currentUser.displayName || currentUser.email || "สมาชิก";
+      $("#authUserName").textContent = name;
+      $("#authAvatar").src = currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=7c5cff&color=fff`;
+      if (!$("#authorField").value) $("#authorField").value = name;
+      if (!$("#commentName").value) $("#commentName").value = name;
+    }
+    renderProfile();
+  }
+  function firebaseErrorMessage(error) {
+    const map = { "auth/email-already-in-use":"อีเมลนี้ถูกใช้งานแล้ว", "auth/invalid-email":"รูปแบบอีเมลไม่ถูกต้อง", "auth/invalid-credential":"อีเมลหรือรหัสผ่านไม่ถูกต้อง", "auth/wrong-password":"รหัสผ่านไม่ถูกต้อง", "auth/user-not-found":"ไม่พบบัญชีนี้", "auth/weak-password":"รหัสผ่านต้องมีอย่างน้อย 6 ตัว", "auth/popup-closed-by-user":"หน้าต่างเข้าสู่ระบบถูกปิด", "auth/popup-blocked":"เบราว์เซอร์บล็อกหน้าต่างเข้าสู่ระบบ", "auth/account-exists-with-different-credential":"อีเมลนี้เคยสมัครด้วยวิธีอื่นแล้ว", "auth/operation-not-allowed":"ยังไม่ได้เปิดผู้ให้บริการนี้ใน Firebase Console", "auth/unauthorized-domain":"โดเมนนี้ยังไม่ได้เพิ่มใน Authorized domains" };
+    return map[error?.code] || error?.message || "เกิดข้อผิดพลาด กรุณาลองใหม่";
+  }
+  async function signInEmail(e) {
+    e.preventDefault();
+    $("#authMessage").textContent = "";
+    try { await auth.signInWithEmailAndPassword($("#authEmail").value.trim(), $("#authPassword").value); $("#authModal").classList.remove("active"); toast("เข้าสู่ระบบแล้ว"); }
+    catch (error) { $("#authMessage").textContent = firebaseErrorMessage(error); }
+  }
+  async function signupEmail() {
+    $("#authMessage").textContent = "";
+    const email = $("#authEmail").value.trim();
+    const password = $("#authPassword").value;
+    const displayName = $("#authName").value.trim();
+    if (!email || password.length < 6) { $("#authMessage").textContent = password.length < 6 ? "รหัสผ่านต้องมีอย่างน้อย 6 ตัว" : "กรุณากรอกอีเมล"; return; }
+    try {
+      const cred = await auth.createUserWithEmailAndPassword(email, password);
+      if (displayName) await cred.user.updateProfile({ displayName });
+      await db.collection("users").doc(cred.user.uid).set({ displayName, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      $("#authModal").classList.remove("active"); toast("สมัครสมาชิกแล้ว");
+    } catch (error) { $("#authMessage").textContent = firebaseErrorMessage(error); }
+  }
+  async function providerLogin(provider) {
+    $("#authMessage").textContent = "";
+    try { await auth.signInWithPopup(provider); $("#authModal").classList.remove("active"); toast("เข้าสู่ระบบแล้ว"); }
+    catch (error) { $("#authMessage").textContent = firebaseErrorMessage(error); }
+  }
+  async function logout() { if (auth) await auth.signOut(); currentUser = null; updateAuthUI(); toast("ออกจากระบบแล้ว"); }
+
+  function applyTheme(theme) { $("#app").setAttribute("data-theme", theme); $("#themeBtn").textContent = theme === "dark" ? "🌙 ธีม" : "☀️ ธีม"; localStorage.setItem(LOCAL_THEME, theme); }
+  function randomStory() { if (!stories.length) return; openReader(stories[Math.floor(Math.random()*stories.length)].id); }
+  function exportJson() {
+    const data = { exportedAt: new Date().toISOString(), stories, bookmarks, likes: localLikes };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `fanfig-backup-${new Date().toISOString().slice(0,10)}.json`; a.click();
+    URL.revokeObjectURL(url);
+  }
+  function resetLocal() {
+    localStorage.removeItem(LOCAL_STORIES); localStorage.removeItem(LOCAL_BOOKMARKS); localStorage.removeItem(LOCAL_LIKES);
+    stories = loadLocalStories(); bookmarks = []; localLikes = []; renderAll(); toast("รีเซ็ตข้อมูล Local แล้ว");
+  }
+  function confirmBox(title, text, callback) { $("#confirmTitle").textContent = title; $("#confirmText").textContent = text; confirmCallback = callback; $("#confirmModal").classList.add("active"); }
+
+  function bindEvents() {
+    ["searchInput","sortSelect","statusSelect","scopeSelect"].forEach(id => $("#"+id).addEventListener(id === "searchInput" ? "input" : "change", renderStories));
+    $("#storyForm").addEventListener("submit", createOrUpdateStory);
+    $("#commentBtn").addEventListener("click", addComment);
+    $("#readerLike").addEventListener("click", () => currentStoryId && toggleLike(currentStoryId));
+    $("#readerBookmark").addEventListener("click", () => currentStoryId && toggleBookmark(currentStoryId));
+    $("#backToLibrary").addEventListener("click", () => $("#library").scrollIntoView({ behavior:"smooth" }));
+    $("#reportBtn").addEventListener("click", () => currentStoryId && $("#reportModal").classList.add("active"));
+    $("#sendReportBtn").addEventListener("click", sendReport);
+    $("#themeBtn").addEventListener("click", () => applyTheme($("#app").getAttribute("data-theme") === "dark" ? "light" : "dark"));
+    $("#randomBtn").addEventListener("click", randomStory);
+    $("#exportBtn").addEventListener("click", exportJson);
+    $("#refreshBtn").addEventListener("click", () => { if (db) listenPublicStories(); else renderAll(); toast("รีเฟรชแล้ว"); });
+    $("#resetBtn").addEventListener("click", () => confirmBox("รีเซ็ตข้อมูล Local", "จะลบข้อมูลที่เก็บในเครื่องนี้เท่านั้น ไม่ลบข้อมูลบน Firebase", resetLocal));
+    $("#loginBtn").addEventListener("click", () => $("#authModal").classList.add("active"));
+    $("#profileLoginBtn").addEventListener("click", () => $("#authModal").classList.add("active"));
+    $("#emailAuthForm").addEventListener("submit", signInEmail);
+    $("#signupBtn").addEventListener("click", signupEmail);
+    $("#googleBtn").addEventListener("click", () => providerLogin(new firebase.auth.GoogleAuthProvider()));
+    $("#facebookBtn").addEventListener("click", () => providerLogin(new firebase.auth.FacebookAuthProvider()));
+    $("#logoutBtn").addEventListener("click", logout);
+    $("#editStoryBtn").addEventListener("click", startEditStory);
+    $("#cancelEditBtn").addEventListener("click", cancelEdit);
+    $("#deleteStoryBtn").addEventListener("click", () => confirmBox("ลบเรื่องนี้", "เมื่อลบแล้วจะกู้คืนจากหน้าเว็บไม่ได้ ต้องการลบจริงไหม?", deleteCurrentStory));
+    $("#openChapterModalBtn").addEventListener("click", openChapterModal);
+    $("#chapterSelect").addEventListener("change", loadChapterIntoForm);
+    $("#saveChapterBtn").addEventListener("click", saveChapter);
+    $("#deleteChapterBtn").addEventListener("click", () => confirmBox("ลบตอนนี้", "ต้องการลบตอนที่เลือกจริงไหม?", deleteChapter));
+    $("#confirmActionBtn").addEventListener("click", async () => { const fn = confirmCallback; confirmCallback = null; $("#confirmModal").classList.remove("active"); if (fn) await fn(); });
+    $$('[data-close]').forEach(btn => btn.addEventListener("click", () => $("#"+btn.dataset.close).classList.remove("active")));
+    $$('[data-scroll]').forEach(btn => btn.addEventListener("click", () => document.getElementById(btn.dataset.scroll)?.scrollIntoView({ behavior:"smooth" })));
+    $$('.nav-btn').forEach(btn => btn.addEventListener("click", () => document.getElementById(btn.dataset.nav)?.scrollIntoView({ behavior:"smooth" })));
+
+    const sections = ["home","library","bookmarks","write","profile"].map(id => document.getElementById(id));
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries.filter(e => e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+      if (!visible) return;
+      $$('.nav-btn').forEach(btn => btn.classList.toggle("active", btn.dataset.nav === visible.target.id));
+    }, { threshold:.35 });
+    sections.forEach(section => observer.observe(section));
+  }
+
+  function boot() {
+    applyTheme(localStorage.getItem(LOCAL_THEME) || "dark");
+    bindEvents();
+    renderAll();
+    initializeFirebase();
+  }
+  boot();
+</script>
+
+<!--
+FANFIG Firebase Firestore Rules แนะนำสำหรับเริ่มทดสอบจริง
+ไปที่ Firebase Console > Firestore Database > Rules แล้วปรับตามนี้
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /stories/{storyId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.ownerUid == request.auth.uid;
+      allow update, delete: if request.auth != null
+        && resource.data.ownerUid == request.auth.uid;
+    }
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    match /reports/{reportId} {
+      allow create: if true;
+      allow read, update, delete: if false;
+    }
+  }
+}
+
+หมายเหตุ:
+- ถ้าจะให้ผู้ใช้ทั่วไปคอมเมนต์/ไลก์บน stories โดยไม่ใช่เจ้าของ อาจต้องแยก comments/likes เป็น subcollection หรือปรับ rules เพิ่ม
+- เวอร์ชันนี้เหมาะเป็น MVP/ต้นแบบใช้งานจริงระดับเริ่มต้น หากเปิดสาธารณะควรเพิ่มระบบแอดมินและ moderation เพิ่มเติม
+-->
+</body>
+</html>
