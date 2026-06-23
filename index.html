@@ -58,10 +58,10 @@
           '<button class="primary" data-scroll="library">เริ่มอ่านเลย</button>',
           `<a class="primary" href="${storyUrl}">📖 อ่านเรื่องของเรา</a><button class="btn" data-scroll="library">ดูคลังทั้งหมด</button>`
         );
-        html = html.replace(
-          '<div class="controls">',
-          featuredCard + '<div class="controls">'
-        );
+        html = html.replace('<div class="controls">', featuredCard + '<div class="controls">');
+        const openTag = String.fromCharCode(60) + 'script src="./assets/alice-story-mode.js?v=20260623-3">';
+        const closeTag = String.fromCharCode(60) + '/script>';
+        html = html.replace('</body>', openTag + closeTag + '</body>');
         document.open();
         document.write(html);
         document.close();
