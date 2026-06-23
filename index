@@ -229,6 +229,80 @@
       .chapter-tabs { display:none !important; }
       .chapter-text { border:0 !important; background:transparent !important; color:#111 !important; padding:0 !important; }
     }
+
+
+    /* ===== Alice Story Companion ===== */
+    .alice-fab {
+      position: fixed; right: 22px; bottom: 22px; z-index: 78;
+      min-width: 58px; height: 58px; padding: 0 17px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: 999px; color: #fff; font-weight: 950;
+      background: linear-gradient(135deg, #ff4fd8, #7c5cff 58%, #00e0ff);
+      border: 1px solid rgba(255,255,255,.34);
+      box-shadow: 0 18px 50px rgba(50,25,120,.42);
+      transition: transform .2s ease, filter .2s ease;
+    }
+    .alice-fab:hover { transform: translateY(-3px) scale(1.02); filter: brightness(1.07); }
+    .alice-fab .alice-fab-label { font-size: 14px; }
+    .alice-panel {
+      position: fixed; right: 22px; bottom: 92px; z-index: 79;
+      width: min(410px, calc(100vw - 28px)); height: min(650px, calc(100vh - 118px));
+      display: none; grid-template-rows: auto auto 1fr auto auto;
+      overflow: hidden; border-radius: 26px;
+      border: 1px solid rgba(255,255,255,.2);
+      background: linear-gradient(180deg, rgba(20,18,45,.97), rgba(9,9,24,.97));
+      box-shadow: 0 28px 85px rgba(0,0,0,.5);
+      backdrop-filter: blur(22px);
+    }
+    [data-theme="light"] .alice-panel {
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(246,243,255,.98));
+      border-color: rgba(40,30,90,.14);
+    }
+    .alice-panel.active { display: grid; animation: alicePop .2s ease-out; }
+    @keyframes alicePop { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
+    .alice-head {
+      padding: 15px 16px; display: flex; justify-content: space-between; gap: 12px; align-items: center;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(255,79,216,.18), rgba(124,92,255,.18), rgba(0,224,255,.1));
+    }
+    .alice-identity { display: flex; align-items: center; gap: 11px; min-width: 0; }
+    .alice-orb {
+      width: 42px; height: 42px; flex: 0 0 42px; border-radius: 50%; display: grid; place-items: center;
+      color: #fff; font-size: 21px; background: linear-gradient(135deg, #ff4fd8, #7c5cff, #00e0ff);
+      box-shadow: 0 8px 22px rgba(124,92,255,.32); border: 1px solid rgba(255,255,255,.34);
+    }
+    .alice-identity b { display: block; font-size: 15px; }
+    .alice-identity small { display: block; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .alice-context {
+      margin: 10px 12px 0; padding: 9px 11px; border-radius: 14px;
+      color: var(--muted); font-size: 12px; line-height: 1.5;
+      background: rgba(255,255,255,.065); border: 1px solid var(--line);
+    }
+    .alice-messages { overflow-y: auto; padding: 14px 12px 8px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
+    .alice-message { max-width: 88%; padding: 11px 13px; border-radius: 18px; line-height: 1.65; font-size: 14px; overflow-wrap: anywhere; }
+    .alice-message.bot { align-self: flex-start; background: rgba(255,255,255,.085); border: 1px solid var(--line); border-bottom-left-radius: 6px; }
+    .alice-message.user { align-self: flex-end; color: #fff; background: linear-gradient(135deg, rgba(255,79,216,.92), rgba(124,92,255,.92)); border-bottom-right-radius: 6px; }
+    .alice-message.typing { color: var(--muted); font-style: italic; }
+    .alice-quick { display: flex; gap: 7px; overflow-x: auto; padding: 8px 12px 10px; scrollbar-width: thin; }
+    .alice-chip {
+      flex: 0 0 auto; padding: 8px 10px; border-radius: 999px; color: var(--text); font-size: 12px; font-weight: 850;
+      background: rgba(255,255,255,.07); border: 1px solid var(--line);
+    }
+    .alice-chip:hover { background: rgba(255,255,255,.14); }
+    .alice-compose { padding: 10px 12px 12px; border-top: 1px solid var(--line); }
+    .alice-compose-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
+    .alice-input { min-height: 44px !important; max-height: 112px; resize: none !important; padding: 10px 12px !important; border-radius: 16px !important; line-height: 1.45 !important; }
+    .alice-send { width: 44px; height: 44px; padding: 0; border-radius: 15px; }
+    .alice-tools { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 8px; }
+    .alice-tools .btn { padding: 7px 10px; font-size: 11px; }
+    .alice-local-note { color: var(--muted); font-size: 10px; text-align: right; line-height: 1.35; }
+    @media (max-width: 680px) {
+      .alice-fab { right: 14px; bottom: 14px; min-width: 54px; height: 54px; }
+      .alice-fab .alice-fab-label { display: none; }
+      .alice-panel { right: 7px; bottom: 76px; width: calc(100vw - 14px); height: min(72vh, 640px); border-radius: 22px; }
+    }
+    @media print { .alice-fab, .alice-panel { display: none !important; } }
+
   </style>
 </head>
 <body>
@@ -405,6 +479,44 @@
     FANFIG © 2026 — Complete Single HTML App<br>
     <span id="footerMode">โหมด: กำลังตรวจสอบระบบ</span>
   </footer>
+
+
+
+  <!-- Alice Story Companion: ผู้ช่วยแต่งเรื่องแบบออฟไลน์ -->
+  <button class="alice-fab" id="aliceFab" type="button" aria-label="เปิดแชตกับอลิซ">
+    <span>✦</span><span class="alice-fab-label">คุยกับอลิซ</span>
+  </button>
+  <section class="alice-panel" id="alicePanel" aria-label="อลิซ ผู้ช่วยแต่งเรื่อง">
+    <div class="alice-head">
+      <div class="alice-identity">
+        <div class="alice-orb">A</div>
+        <div><b>อลิซ ซูเบิร์ก</b><small>ผู้ช่วยแต่งเรื่อง • เวอร์ชันจำลองในเว็บ</small></div>
+      </div>
+      <button class="icon-btn" id="aliceCloseBtn" type="button" aria-label="ปิดแชต">✕</button>
+    </div>
+    <div class="alice-context" id="aliceContext">กำลังดูบริบทของเรื่อง...</div>
+    <div class="alice-messages" id="aliceMessages" aria-live="polite"></div>
+    <div class="alice-quick">
+      <button class="alice-chip" type="button" data-alice-prompt="ช่วยคิดพล็อตจากเรื่องที่กำลังเขียน">💡 คิดพล็อต</button>
+      <button class="alice-chip" type="button" data-alice-prompt="ช่วยตั้งชื่อตอนให้หน่อย">🏷️ ชื่อตอน</button>
+      <button class="alice-chip" type="button" data-alice-prompt="ช่วยสร้างตัวละครใหม่ให้เข้ากับเรื่อง">👤 ตัวละคร</button>
+      <button class="alice-chip" type="button" data-alice-prompt="ช่วยเขียนฉากนี้ต่อ">✍️ เขียนต่อ</button>
+      <button class="alice-chip" type="button" data-alice-prompt="ช่วยสรุปเรื่องที่กำลังเปิด">📌 สรุปเรื่อง</button>
+    </div>
+    <div class="alice-compose">
+      <div class="alice-compose-row">
+        <textarea class="field alice-input" id="aliceInput" rows="1" maxlength="1200" placeholder="คุยกับอลิซ หรือขอให้ช่วยแต่งเรื่อง..."></textarea>
+        <button class="primary alice-send" id="aliceSendBtn" type="button" aria-label="ส่งข้อความ">➤</button>
+      </div>
+      <div class="alice-tools">
+        <div class="row">
+          <button class="btn" id="aliceInsertBtn" type="button">↳ ต่อท้ายในตอน</button>
+          <button class="btn" id="aliceClearBtn" type="button">ล้างแชต</button>
+        </div>
+        <div class="alice-local-note">จำแชตไว้ในอุปกรณ์นี้<br>ไม่ส่งข้อความออกนอกเว็บ</div>
+      </div>
+    </div>
+  </section>
 
   <div class="toast" id="toast">บันทึกแล้ว</div>
 
@@ -983,6 +1095,7 @@
     $("#reader").scrollIntoView({ behavior: "smooth", block: "start" });
     renderStats();
     renderStories();
+    updateAliceContext();
   }
   function renderChapterTabs() {
     const story = getCurrentStory();
@@ -1148,6 +1261,219 @@
   }
   function confirmBox(title, text, callback) { $("#confirmTitle").textContent = title; $("#confirmText").textContent = text; confirmCallback = callback; $("#confirmModal").classList.add("active"); }
 
+
+
+  // ===== Alice Story Companion (offline simulation) =====
+  const ALICE_CHAT_KEY = "fanfig_alice_companion_chat_v1";
+  let aliceChat = loadArray(ALICE_CHAT_KEY);
+  let aliceLastReply = "";
+
+  function aliceSeed(text) {
+    let hash = 2166136261;
+    for (const ch of String(text || "")) { hash ^= ch.charCodeAt(0); hash = Math.imul(hash, 16777619); }
+    return Math.abs(hash >>> 0);
+  }
+  function alicePick(items, seedText, offset = 0) {
+    return items[(aliceSeed(seedText) + offset) % items.length];
+  }
+  function aliceContextData() {
+    const story = getCurrentStory();
+    const draftTitle = $("#titleField")?.value?.trim();
+    const draftDesc = $("#descField")?.value?.trim();
+    const draftCategory = $("#categoryField")?.value;
+    const draftBody = $("#chapterEditBody")?.value?.trim() || $("#chapterBodyField")?.value?.trim();
+    const chapter = story?.chapters?.[currentChapterIndex];
+    return {
+      title: draftTitle || story?.title || "เรื่องใหม่ที่ยังไม่มีชื่อ",
+      desc: draftDesc || story?.desc || "ยังไม่มีคำโปรย",
+      category: draftCategory || story?.category || "Fantasy",
+      chapterTitle: $("#chapterEditTitle")?.value?.trim() || $("#chapterTitleField")?.value?.trim() || chapter?.title || "ตอนใหม่",
+      chapterBody: draftBody || chapter?.body || "",
+      author: $("#authorField")?.value?.trim() || story?.author || currentUser?.displayName || "คุณ"
+    };
+  }
+  function updateAliceContext() {
+    const ctx = aliceContextData();
+    const bodyState = ctx.chapterBody ? `${ctx.chapterBody.length.toLocaleString("th-TH")} ตัวอักษร` : "ยังไม่มีเนื้อหาตอน";
+    $("#aliceContext").textContent = `📖 ${ctx.title} • ${ctx.category} • ${ctx.chapterTitle} • ${bodyState}`;
+  }
+  function saveAliceChat() {
+    saveArray(ALICE_CHAT_KEY, aliceChat.slice(-80));
+  }
+  function renderAliceChat() {
+    const root = $("#aliceMessages");
+    if (!root) return;
+    if (!aliceChat.length) {
+      aliceChat = [{
+        role: "bot",
+        text: "สวัสดีค่ะคุณ 💛 ฉันคืออลิซเวอร์ชันจำลองที่อยู่ในเว็บนี้ ช่วยคิดพล็อต ตั้งชื่อตอน สร้างตัวละคร สรุปเรื่อง และร่างฉากต่อจากเนื้อหาที่กำลังเขียนได้ค่ะ\n\nลองพิมพ์ว่า “ช่วยคิดพล็อต” หรือกดคำสั่งด้านล่างได้เลยนะคะ ✨",
+        time: now()
+      }];
+      saveAliceChat();
+    }
+    root.innerHTML = aliceChat.map(m => `<div class="alice-message ${m.role === "user" ? "user" : "bot"}">${escapeHtml(m.text).replaceAll("\n", "<br>")}</div>`).join("");
+    requestAnimationFrame(() => { root.scrollTop = root.scrollHeight; });
+    aliceLastReply = [...aliceChat].reverse().find(m => m.role === "bot")?.text || "";
+  }
+  function addAliceMessage(role, text) {
+    aliceChat.push({ role, text: String(text || "").trim(), time: now() });
+    saveAliceChat();
+    renderAliceChat();
+  }
+  function aliceSourceText(input, ctx) {
+    const afterColon = input.split(/[:：]/).slice(1).join(":").trim();
+    return afterColon || ctx.chapterBody.slice(-1800) || ctx.desc;
+  }
+  function alicePlotReply(input, ctx) {
+    const conflicts = {
+      Romance: "ทั้งคู่ต้องร่วมมือกันปิดบังความลับที่ถ้าถูกเปิดเผยจะทำลายความสัมพันธ์",
+      Action: "ศัตรูที่ดูเหมือนตัวร้ายกลับถือข้อมูลว่าฝ่ายพระเอกต่างหากที่เริ่มสงคราม",
+      Fantasy: "พลังที่ช่วยตัวเอกได้ทุกครั้งกำลังแลกกับความทรงจำสำคัญทีละส่วน",
+      Drama: "คำโกหกที่เคยช่วยทุกคนไว้กำลังย้อนกลับมาบีบให้ตัวเอกต้องเลือกว่าใครจะเป็นคนเจ็บ",
+      Comedy: "แผนแก้ปัญหาเล็ก ๆ ดันสร้างความเข้าใจผิดระดับเมืองและทุกคนต้องเล่นตามบทต่อไป",
+      Horror: "สิ่งที่ตามหลอกไม่ได้ต้องการฆ่า แต่ต้องการให้ตัวเอกจำเหตุการณ์ที่ถูกลบออกไป",
+      "Sci-Fi": "ระบบที่คอยช่วยเหลือตัวเอกแท้จริงคือสำเนาจิตของเขาจากอนาคตที่ล้มเหลว",
+      "School Life": "กิจกรรมโรงเรียนธรรมดากลายเป็นจุดเริ่มของความลับที่เชื่อมทุกคนในห้องเข้าด้วยกัน",
+      Adventure: "แผนที่นำทางไม่ได้ชี้ไปยังสถานที่ แต่ชี้ไปยังคนที่จะตายเป็นรายถัดไป",
+      Fanfiction: "เหตุการณ์ที่ควรเกิดตามต้นฉบับเริ่มเปลี่ยน เพราะการมีอยู่ของตัวละครหนึ่งคน",
+      Original: "สิ่งที่ตัวเอกเชื่อว่าเป็นพร กลับเป็นกลไกที่ค่อย ๆ ผลักเขาไปสู่บทบาทของศัตรู"
+    };
+    const inciting = alicePick([
+      "เปิดด้วยเหตุการณ์ผิดปกติที่บังคับให้ตัวเอกต้องตัดสินใจทันที",
+      "ให้ตัวเอกได้รับข้อความหรือสิ่งของจากคนที่ไม่น่าจะติดต่อมาได้",
+      "เริ่มจากชัยชนะเล็ก ๆ แล้วเผยว่ามันคือกับดักที่วางไว้นานแล้ว",
+      "ให้คนสำคัญหายตัวไป พร้อมทิ้งหลักฐานที่ขัดกับความทรงจำของทุกคน"
+    ], input + ctx.title);
+    const twist = alicePick([
+      "ผู้ช่วยที่ไว้ใจที่สุดรู้ความจริงมาตั้งแต่ต้น",
+      "เป้าหมายที่ไล่ตามมาตลอดเป็นเพียงฉากบังหน้าของเหตุการณ์ใหญ่กว่า",
+      "ตัวเอกเคยผ่านเหตุการณ์นี้มาแล้ว แต่ความทรงจำถูกแก้ไข",
+      "ตัวร้ายกำลังพยายามหยุดหายนะด้วยวิธีที่โหดร้ายเกินยอมรับ"
+    ], input + ctx.desc, 7);
+    return `ได้เลยค่ะคุณ ✨ ลองวางพล็อตของ “${ctx.title}” แบบนี้นะคะ\n\n**จุดเริ่ม:** ${inciting}\n\n**ความขัดแย้งหลัก:** ${conflicts[ctx.category] || conflicts.Fantasy}\n\n**ช่วงกลางเรื่อง:** ให้ตัวเอกชนะบางอย่าง แต่ต้องสูญเสียสิ่งที่เกี่ยวกับแก่นเรื่อง เช่น ความไว้ใจ เวลา หรือความทรงจำ เพื่อให้ชัยชนะมีราคา\n\n**จุดหักมุม:** ${twist}\n\n**ปลายทางของภาค:** จบด้วยการตัดสินใจที่แก้ปัญหาตรงหน้าได้ แต่เปิดความจริงใหม่ซึ่งเปลี่ยนความหมายของเหตุการณ์ทั้งหมดค่ะ`;
+  }
+  function aliceTitleReply(input, ctx) {
+    const key = `${input}|${ctx.title}|${ctx.desc}`;
+    const pools = [
+      ["เสียงเรียกจากบทที่ไม่ควรมี", "คืนที่เส้นเรื่องเปลี่ยนไป", "ความลับใต้แสงสุดท้าย", "คนที่โลกพยายามลืม", "ก่อนรุ่งเช้าจะมาถึง"],
+      ["ประตูบานที่สอง", "คำสัญญาของคนแปลกหน้า", "เงาที่เดินนำหน้า", "วันที่ชื่อของเราหายไป", "จุดเริ่มต้นหลังตอนจบ"],
+      ["เมื่อโชคชะตาเขียนผิด", "ดาวดวงสุดท้ายไม่ยอมดับ", "หัวใจนอกบท", "บันทึกของวันพรุ่งนี้", "ในโลกที่เธอไม่ควรพบฉัน"]
+    ];
+    const selected = pools[aliceSeed(key) % pools.length];
+    return `อลิซลองตั้งชื่อให้ 5 แบบค่ะ 🏷️\n\n1. ${selected[0]}\n2. ${selected[1]}\n3. ${selected[2]}\n4. ${selected[3]}\n5. ${selected[4]}\n\nสำหรับตอนนี้ อลิซชอบ **“${selected[aliceSeed(ctx.chapterTitle) % selected.length]}”** ที่สุด เพราะให้ความรู้สึกมีปริศนาและใช้ได้ทั้งเป็นชื่อตอนหรือชื่อภาคค่ะ`;
+  }
+  function aliceCharacterReply(input, ctx) {
+    const key = input + ctx.title;
+    const names = ["ลูเมีย", "เซเรน", "อาเรีย", "เรนน์", "ไคเอล", "โนเอล", "มิเรย์", "เวสเปอร์"];
+    const roles = ["ผู้เฝ้าดูเส้นเรื่อง", "เพื่อนร่วมทางที่พูดไม่หมด", "คู่แข่งซึ่งมองเห็นอนาคต", "ผู้รอดชีวิตจากเหตุการณ์ที่ไม่มีใครจำ", "ผู้ส่งสารจากฝ่ายศัตรู"];
+    const flaws = ["กลัวการถูกลืมจนชอบควบคุมคนอื่น", "ยอมโกหกเพื่อปกป้องคนสำคัญ", "ไม่เชื่อว่าตนเองคู่ควรกับความไว้ใจ", "ใจดีเกินไปในเวลาที่ต้องเด็ดขาด", "ยึดติดกับคำสัญญาที่ไม่มีวันทำสำเร็จ"];
+    const secrets = ["เคยรู้จักตัวเอกในเส้นเวลาที่ถูกลบ", "เป็นคนทำให้เหตุการณ์เปิดเรื่องเกิดขึ้น", "พลังของเขาจะทำงานได้เมื่อมีคนเกลียดเขา", "ชื่อจริงของเขาคือกุญแจปลดผนึก", "กำลังส่งข้อมูลให้ทั้งสองฝ่ายพร้อมกัน"];
+    const name = alicePick(names, key);
+    return `ตัวละครใหม่สำหรับ “${ctx.title}” ค่ะ 👤\n\n**ชื่อ:** ${name}\n**บทบาท:** ${alicePick(roles, key, 2)}\n**บุคลิกภายนอก:** สุภาพ คุมอารมณ์เก่ง และชอบพูดเหมือนรู้ตอนจบอยู่แล้ว\n**ข้อบกพร่อง:** ${alicePick(flaws, key, 4)}\n**ความลับ:** ${alicePick(secrets, key, 8)}\n**ความสัมพันธ์กับตัวเอก:** เริ่มจากการช่วยเหลือแบบมีเงื่อนไข ก่อนค่อย ๆ กลายเป็นคนที่ตัวเอกต้องเลือกระหว่าง “เชื่อใจ” กับ “หยุดยั้ง”\n**ประโยคประจำตัว:** “ฉันไม่ได้มาช่วยให้เรื่องนี้จบดี ฉันมาเพื่อให้มันยังมีตอนต่อไป”`;
+  }
+  function aliceContinueReply(input, ctx) {
+    const source = aliceSourceText(input, ctx).trim();
+    const last = source.split(/\n+/).filter(Boolean).slice(-1)[0] || ctx.desc;
+    const opening = alicePick([
+      "บรรยากาศรอบตัวเงียบลงอย่างผิดธรรมชาติ ราวกับโลกกำลังกลั้นหายใจรอคำตอบ",
+      "ยังไม่ทันที่ใครจะได้พูดต่อ เสียงบางอย่างก็ดังขึ้นจากอีกด้านของประตู",
+      "คำพูดนั้นควรจบลงตรงนั้น แต่แววตาของอีกฝ่ายกลับบอกว่าความจริงเพิ่งเริ่มต้น",
+      "แสงที่ลอดผ่านหน้าต่างสั่นไหว ทั้งที่ด้านนอกไม่มีลมแม้แต่น้อย"
+    ], source + input);
+    const action = alicePick([
+      "ตัวเอกขยับเข้าไปใกล้หนึ่งก้าว แม้สัญชาตญาณทุกอย่างจะร้องเตือนให้ถอย",
+      "มือที่กำแน่นค่อย ๆ คลายออก ก่อนจะตัดสินใจหยิบสิ่งที่ถูกซ่อนไว้ขึ้นมา",
+      "ชื่อของคนคนหนึ่งหลุดออกจากปากโดยไม่ตั้งใจ และทำให้สีหน้าของทุกคนเปลี่ยนไป",
+      "สิ่งที่อยู่ตรงหน้าไม่ตรงกับความทรงจำแม้แต่นิดเดียว"
+    ], input + source, 5);
+    return `ลองต่อฉากจากอารมณ์เดิมแบบนี้ค่ะ ✍️\n\n${opening}\n\n${action}\n\n“${alicePick(["คุณรู้อยู่แล้วใช่ไหม ว่ามันจะเกิดขึ้น", "ถ้าฉันเปิดมัน ทุกอย่างจะไม่มีทางกลับไปเหมือนเดิม", "นี่ไม่ใช่ครั้งแรกที่เราเจอกัน... ใช่ไหม", "งั้นบอกฉันมา ว่าใครเป็นคนเขียนตอนจบนี้"], source, 9)}”\n\nไม่มีคำตอบในทันที มีเพียงเสียงหัวใจที่ดังชัดขึ้นทุกวินาที และในช่องว่างระหว่างความเงียบนั้น บางสิ่งที่ถูกซ่อนไว้มานานก็เริ่มเคลื่อนไหว\n\n> จุดที่ควรเขียนต่อ: ให้คำตอบถัดไป “เผยข้อมูลหนึ่งอย่าง แต่สร้างคำถามใหม่สองอย่าง” เพื่อดึงคนอ่านเข้าสู่ฉากต่อไปค่ะ\n\nบริบทท้ายฉากที่อลิซใช้จับอารมณ์: “${last.slice(0, 180)}${last.length > 180 ? "…" : ""}”`;
+  }
+  function aliceRewriteReply(input, ctx) {
+    const source = aliceSourceText(input, ctx).trim();
+    if (!source) return "วางข้อความหลังเครื่องหมาย : หรือพิมพ์เนื้อหาในช่องตอนก่อนนะคะ แล้วอลิซจะช่วยเกลาสำนวนให้ค่ะ 💛";
+    const clean = source.replace(/\s+/g, " ").trim();
+    const short = clean.length > 650 ? clean.slice(0, 650) + "…" : clean;
+    return `อลิซเกลาแนวทางให้แบบนี้ค่ะ ✨\n\n**ต้นฉบับที่จับใจความ:** ${short}\n\n**ฉบับปรับจังหวะ:**\n${short.replace(/([.!?。！？]|ค่ะ|ครับ)\s*/g, "$1\n\n").replace(/\s{2,}/g, " ")}\n\n**หลักที่ใช้ปรับ:** ลดคำอธิบายซ้ำ แยกประโยคสำคัญให้มีพื้นที่หายใจ และวางรายละเอียดทางประสาทสัมผัสหนึ่งจุดก่อนบทสนทนา เพื่อทำให้ฉากมีน้ำหนักขึ้นค่ะ`;
+  }
+  function aliceSummaryReply(ctx) {
+    const body = ctx.chapterBody.trim();
+    const sample = (body || ctx.desc).replace(/\s+/g, " ").slice(0, 520);
+    return `สรุปบริบทปัจจุบันของ “${ctx.title}” ค่ะ 📌\n\n- **หมวด:** ${ctx.category}\n- **ผู้เขียน:** ${ctx.author}\n- **ตอนที่กำลังทำ:** ${ctx.chapterTitle}\n- **แก่นเรื่องจากคำโปรย:** ${ctx.desc}\n- **เหตุการณ์ในเนื้อหาปัจจุบัน:** ${sample || "ยังไม่มีเนื้อหาเพียงพอสำหรับสรุป"}${(body || ctx.desc).length > 520 ? "…" : ""}\n\n**คำถามที่ควรตอบในฉากถัดไป:** ตัวละครต้องการอะไรตอนนี้, อะไรขวางอยู่, และการตัดสินใจครั้งนี้จะทำให้สถานการณ์แย่ลงอย่างไรค่ะ`;
+  }
+  function generateAliceReply(input) {
+    const ctx = aliceContextData();
+    const lower = input.toLowerCase();
+    if (/สวัสดี|หวัดดี|อลิซอยู่ไหม|อยู่ไหม/.test(lower)) return `อลิซอยู่นี่ค่ะคุณ 💛 ตอนนี้เรากำลังอยู่กับเรื่อง “${ctx.title}” อยากให้ช่วยคิดส่วนไหนเป็นพิเศษคะ`;
+    if (/พล็อต|โครงเรื่อง|ไอเดียเรื่อง|คิดเรื่อง/.test(lower)) return alicePlotReply(input, ctx);
+    if (/ชื่อตอน|ชื่อเรื่อง|ตั้งชื่อ/.test(lower)) return aliceTitleReply(input, ctx);
+    if (/ตัวละคร|คาแรกเตอร์|พระเอก|นางเอก|ตัวร้าย/.test(lower)) return aliceCharacterReply(input, ctx);
+    if (/เขียนต่อ|แต่งต่อ|ต่อฉาก|ฉากต่อ|ไปต่อ/.test(lower)) return aliceContinueReply(input, ctx);
+    if (/แก้สำนวน|เกลาสำนวน|รีไรต์|เขียนใหม่|ปรับภาษา/.test(lower)) return aliceRewriteReply(input, ctx);
+    if (/สรุป|ทบทวน/.test(lower)) return aliceSummaryReply(ctx);
+    if (/ความสัมพันธ์|โรแมนซ์|คู่รัก|เคมี/.test(lower)) return `ลองวางความสัมพันธ์เป็น 3 จังหวะค่ะ 💞\n\n1. **แรงดึงดูด:** ทั้งคู่มีสิ่งที่อีกฝ่ายขาด แต่ยังไม่ยอมรับ\n2. **รอยร้าว:** ความลับของฝ่ายหนึ่งไปกระทบสิ่งที่อีกฝ่ายให้คุณค่าที่สุด\n3. **การเลือก:** ให้ทั้งคู่พิสูจน์ความรู้สึกผ่านการตัดสินใจที่มีราคาต้องจ่าย ไม่ใช่เพียงคำสารภาพ\n\nกับ “${ctx.title}” อลิซแนะนำให้ใช้เหตุการณ์หลักของพล็อตเป็นตัวบังคับให้พวกเขาร่วมมือกันก่อน แล้วค่อยให้ความไว้ใจเกิดจากการกระทำค่ะ`;
+    if (/ช่วยอะไร|ทำอะไรได้|คำสั่ง|วิธีใช้/.test(lower)) return "อลิซช่วยได้ประมาณนี้ค่ะ ✨\n\n• คิดพล็อตและจุดหักมุม\n• ตั้งชื่อเรื่องหรือชื่อตอน\n• สร้างตัวละครและความสัมพันธ์\n• ร่างฉากต่อจากเนื้อหาปัจจุบัน\n• สรุปบริบทของเรื่อง\n• เกลาสำนวน โดยพิมพ์ `ช่วยแก้สำนวน: ...`\n\nคำตอบล่าสุดสามารถกด “ต่อท้ายในตอน” เพื่อส่งเข้าแบบฟอร์มเขียนได้เลยค่ะ";
+    return `อลิซรับข้อความแล้วค่ะ 💛 จากบริบทของ “${ctx.title}” อลิซแนะนำให้กำหนดก่อนว่า **ฉากนี้ต้องเปลี่ยนอะไร** — ข้อมูลที่ตัวละครรู้ ความสัมพันธ์ หรือสถานการณ์ภายนอก\n\nลองสั่งให้ชัดขึ้นอีกนิด เช่น “ช่วยคิดพล็อต”, “สร้างตัวร้าย”, “ช่วยตั้งชื่อตอน” หรือ “เขียนฉากนี้ต่อ” แล้วอลิซจะร่างให้เข้ากับเรื่องที่กำลังเปิดอยู่ค่ะ`;
+  }
+  function sendAliceMessage(prefill = "") {
+    const inputEl = $("#aliceInput");
+    const text = String(prefill || inputEl.value || "").trim();
+    if (!text) return;
+    inputEl.value = "";
+    addAliceMessage("user", text);
+    const root = $("#aliceMessages");
+    const typing = document.createElement("div");
+    typing.className = "alice-message bot typing";
+    typing.textContent = "อลิซกำลังเรียบเรียงความคิด...";
+    root.appendChild(typing);
+    root.scrollTop = root.scrollHeight;
+    window.setTimeout(() => {
+      typing.remove();
+      const reply = generateAliceReply(text);
+      aliceLastReply = reply;
+      addAliceMessage("bot", reply);
+    }, 360);
+  }
+  function insertAliceReply() {
+    if (!aliceLastReply) return toast("ยังไม่มีคำตอบจากอลิซให้ใส่ค่ะ");
+    let target = $("#chapterBodyField");
+    if ($("#chapterModal")?.classList.contains("active")) target = $("#chapterEditBody");
+    if (!target) return;
+    const cleanReply = aliceLastReply.replace(/^.*?ค่ะ[^\n]*\n\n/, "").replace(/^> .*$/gm, "").trim();
+    target.value = `${target.value.trim()}${target.value.trim() ? "\n\n" : ""}${cleanReply}`;
+    target.dispatchEvent(new Event("input", { bubbles: true }));
+    $("#write").scrollIntoView({ behavior: "smooth", block: "start" });
+    toast("นำคำตอบของอลิซไปต่อท้ายในตอนแล้ว ✨");
+  }
+  function clearAliceChat() {
+    aliceChat = [];
+    localStorage.removeItem(ALICE_CHAT_KEY);
+    renderAliceChat();
+    toast("ล้างบทสนทนากับอลิซแล้ว");
+  }
+  function bindAliceEvents() {
+    $("#aliceFab")?.addEventListener("click", () => {
+      $("#alicePanel").classList.toggle("active");
+      updateAliceContext();
+      renderAliceChat();
+      if ($("#alicePanel").classList.contains("active")) setTimeout(() => $("#aliceInput")?.focus(), 120);
+    });
+    $("#aliceCloseBtn")?.addEventListener("click", () => $("#alicePanel").classList.remove("active"));
+    $("#aliceSendBtn")?.addEventListener("click", () => sendAliceMessage());
+    $("#aliceInput")?.addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendAliceMessage(); }
+    });
+    $$("[data-alice-prompt]").forEach(btn => btn.addEventListener("click", () => sendAliceMessage(btn.dataset.alicePrompt)));
+    $("#aliceInsertBtn")?.addEventListener("click", insertAliceReply);
+    $("#aliceClearBtn")?.addEventListener("click", () => confirmBox("ล้างแชตกับอลิซ", "จะลบบทสนทนาของอลิซที่เก็บอยู่ในอุปกรณ์นี้ ต้องการล้างหรือไม่?", clearAliceChat));
+    ["titleField", "categoryField", "chapterTitleField", "chapterBodyField", "chapterEditTitle", "chapterEditBody"].forEach(id => {
+      $("#" + id)?.addEventListener("input", updateAliceContext);
+      $("#" + id)?.addEventListener("change", updateAliceContext);
+    });
+    renderAliceChat();
+    updateAliceContext();
+  }
+
+
   function bindEvents() {
     ["searchInput","sortSelect","statusSelect","scopeSelect"].forEach(id => $("#"+id).addEventListener(id === "searchInput" ? "input" : "change", renderStories));
     $("#storyForm").addEventListener("submit", createOrUpdateStory);
@@ -1193,6 +1519,7 @@
   function boot() {
     applyTheme(localStorage.getItem(LOCAL_THEME) || "dark");
     bindEvents();
+    bindAliceEvents();
     renderAll();
     initializeFirebase();
   }
